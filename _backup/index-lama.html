@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danny Mamesah Studio — Field Notes from the Road</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;700;800;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.183/build/three.module.js" } }
+</script>
+<style>
+  :root {
+    --void-black: #050508;
+    --void-dark:  #0A0A0F;
+    --void-grey:  #14141A;
+    --neon-red:   #ea0000;
+    --neon-green: #00ff88;
+    --neon-blue:  #4D9FFF;
+    --ink-soft:   rgba(255,255,255,0.7);
+    --ink-mute:   rgba(255,255,255,0.5);
+    --ink-faint:  rgba(255,255,255,0.3);
+    --ink-ghost:  rgba(255,255,255,0.12);
+    --ease-quiet:    cubic-bezier(.22, 1, .36, 1);
+    --ease-precise:  cubic-bezier(.4, 0, .2, 1);
+    --ease-emphasis: cubic-bezier(.16, 1, .3, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body {
+    background: var(--void-black);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+    cursor: none;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #custom-cursor {
+    position: fixed; top: 0; left: 0;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    mix-blend-mode: difference;
+    pointer-events: none;
+    z-index: 9999;
+    will-change: transform;
+    transition: width .3s var(--ease-quiet), height .3s var(--ease-quiet), opacity .3s var(--ease-quiet);
+  }
+  @media (hover: none), (pointer: coarse) {
+    #custom-cursor { display: none !important; }
+    body { cursor: auto; }
+  }
+
+  #particle-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  ::selection { background: var(--neon-red); color: #fff; }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+
+  /* ============ NAV ============ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    mix-blend-mode: difference;
+    pointer-events: none;
+  }
+  nav > * { pointer-events: auto; }
+  .nav-logo {
+    font: 700 13px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .nav-logo::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--neon-red);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--neon-red);
+  }
+  .nav-meta {
+    display: flex; gap: 2rem; align-items: center;
+    font: 400 11px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+  }
+  .nav-status {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .nav-status::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--neon-green);
+    box-shadow: 0 0 8px var(--neon-green);
+    animation: pulse-live 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-live {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+  @media (max-width: 640px) {
+    .nav-meta { gap: 1rem; font-size: 10px; }
+    .nav-meta .nav-clock { display: none; }
+  }
+
+  /* ============ SECTION BASE ============ */
+  section {
+    position: relative;
+    z-index: 2;
+    padding: 8rem 2rem;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+  .container-narrow { max-width: 860px; margin: 0 auto; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 0.75rem;
+    font: 400 11px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 2rem;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--neon-red);
+    box-shadow: 0 0 12px var(--neon-red);
+  }
+
+  /* ============ HERO ============ */
+  #hero {
+    height: 100vh;
+    min-height: 720px;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 2rem 4rem;
+    overflow: hidden;
+  }
+  #hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 80%, rgba(234,0,0,0.12) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .hero-inner {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  #hero-title {
+    font: 700 clamp(2.5rem, 11vw, 10.5rem)/0.92 'JetBrains Mono', monospace;
+    letter-spacing: -0.04em;
+    color: #fff;
+    margin-bottom: 2.5rem;
+    word-break: break-word;
+  }
+  #hero-title.is-decoding {
+    text-shadow: 0 0 12px rgba(234,0,0,0.6), 0 0 24px rgba(234,0,0,0.3);
+  }
+  .hero-sub-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 4rem;
+    max-width: 1100px;
+  }
+  @media (max-width: 900px) {
+    .hero-sub-row { grid-template-columns: 1fr; gap: 2rem; }
+  }
+  .hero-sub {
+    max-width: 540px;
+    font: 400 1.0625rem/1.65 'Inter', sans-serif;
+    color: var(--ink-soft);
+  }
+  .hero-quote {
+    font: 400 0.95rem/1.6 'JetBrains Mono', monospace;
+    color: var(--ink-mute);
+    border-left: 1px solid var(--neon-red);
+    padding-left: 1.25rem;
+  }
+  .hero-quote strong {
+    color: #fff;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .hero-meta-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    border-top: 1px solid var(--ink-ghost);
+    padding-top: 2rem;
+  }
+  @media (max-width: 768px) {
+    .hero-meta-row { grid-template-columns: repeat(2, 1fr); }
+  }
+  .hero-meta-item { display: flex; flex-direction: column; gap: 0.5rem; }
+  .hero-meta-label {
+    font: 400 10px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .hero-meta-value {
+    font: 700 1rem/1.3 'JetBrains Mono', monospace;
+    color: #fff;
+  }
+  .hero-meta-value .dot-live {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--neon-green);
+    margin-right: 0.4rem;
+    box-shadow: 0 0 6px var(--neon-green);
+    animation: pulse-live 2.5s ease-in-out infinite;
+  }
+
+  /* ============ MANIFESTO ============ */
+  #manifesto { padding: 12rem 2rem; }
+  .manifesto-container { max-width: 920px; margin: 0 auto; }
+  .manifesto-text {
+    font: 400 clamp(1.4rem, 3vw, 2.2rem)/1.45 'Inter', sans-serif;
+    letter-spacing: -0.015em;
+    color: #fff;
+    margin-bottom: 4rem;
+  }
+  .manifesto-text .word {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(12px) brightness(30%);
+    will-change: filter, opacity;
+    margin-right: 0.22em;
+  }
+  .manifesto-text .word.accent { color: var(--neon-red); }
+  .manifesto-footer {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-top: 1px solid var(--ink-ghost);
+    padding-top: 2rem;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .manifesto-sign {
+    font: 700 13px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+    color: #fff;
+  }
+  .manifesto-sign.muted { color: var(--ink-mute); font-weight: 400; }
+
+  /* ============ WORKS (horizontal pin) ============ */
+  #works {
+    padding: 0;
+    background: var(--void-black);
+    position: relative;
+  }
+  .works-intro {
+    padding: 8rem 2rem 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .works-header-row {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .works-counter {
+    font: 400 12px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .works-counter span { color: var(--neon-red); }
+  #works-pin-wrap {
+    height: 100vh;
+    min-height: 720px;
+    position: relative;
+  }
+  .works-pin {
+    position: sticky; top: 0;
+    height: 100vh; min-height: 720px;
+    overflow: hidden;
+    display: flex; align-items: center;
+  }
+  .works-track {
+    display: flex; gap: 2rem;
+    padding: 0 6rem;
+    will-change: transform;
+    transition: transform 0.05s linear;
+  }
+  .work-card {
+    flex: 0 0 360px;
+    height: 540px;
+    background: var(--void-dark);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--ink-ghost);
+    transition: transform 0.2s var(--ease-quiet), border-color 0.4s var(--ease-quiet);
+    cursor: none;
+  }
+  .work-card:hover { border-color: rgba(234,0,0,0.4); }
+  .work-card-image {
+    width: 100%; height: 68%;
+    background-size: cover; background-position: center;
+    filter: grayscale(0.4) contrast(1.05) brightness(0.85);
+    transition: filter 0.6s var(--ease-quiet), transform 0.8s var(--ease-quiet);
+    transform: scale(1.02);
+  }
+  .work-card:hover .work-card-image {
+    filter: grayscale(0) contrast(1.1) brightness(1);
+    transform: scale(1.06);
+  }
+  .work-card-image::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.6) 100%);
+    pointer-events: none;
+  }
+  .work-card-info {
+    padding: 1.5rem;
+    height: 32%;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+  }
+  .work-card-title {
+    font: 800 1.2rem/1.15 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .work-card-meta {
+    display: flex; justify-content: space-between;
+    font: 400 10px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .work-card-num { color: var(--neon-red); }
+  .work-card-loc {
+    display: flex; align-items: center; gap: 0.4rem;
+    color: var(--neon-green);
+  }
+  .work-card-loc::before {
+    content: ''; width: 4px; height: 4px;
+    background: var(--neon-green); border-radius: 50%;
+  }
+  .works-progress-wrap {
+    position: absolute;
+    bottom: 3rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+    z-index: 5;
+  }
+  .works-progress {
+    width: 12rem; height: 1px;
+    background: var(--ink-ghost);
+    position: relative;
+  }
+  .works-progress-bar {
+    position: absolute; left: 0; top: 0;
+    height: 100%; width: 0%;
+    background: var(--neon-red);
+    box-shadow: 0 0 8px var(--neon-red);
+  }
+  .works-progress-label {
+    font: 400 10px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  @media (max-width: 1024px) {
+    #works-pin-wrap { height: auto; min-height: 0; }
+    .works-pin { position: relative; height: auto; padding: 2rem 0; }
+    .works-track {
+      overflow-x: auto; scroll-snap-type: x mandatory;
+      padding: 0 1.5rem;
+    }
+    .work-card { flex: 0 0 280px; height: 420px; scroll-snap-align: start; }
+    .works-progress-wrap { display: none; }
+  }
+
+  /* ============ GALLERY ============ */
+  #gallery { padding: 10rem 2rem; }
+  .gallery-grid {
+    max-width: 1400px;
+    margin: 4rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1rem;
+  }
+  .media {
+    position: relative;
+    overflow: hidden;
+    background: var(--void-dark);
+  }
+  .media img {
+    width: 100%; height: 100%; display: block;
+    object-fit: cover;
+    transform: scale(1.1);
+  }
+  .media-label {
+    position: absolute;
+    bottom: 1rem; left: 1rem;
+    font: 400 10px/1.4 'JetBrains Mono', monospace;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: #fff;
+    background: rgba(5,5,8,0.7);
+    backdrop-filter: blur(8px);
+    padding: 0.5rem 0.75rem;
+    border-left: 1px solid var(--neon-red);
+    z-index: 2;
+  }
+  .media-1 { grid-column: span 7; aspect-ratio: 16/10; }
+  .media-2 { grid-column: span 5; aspect-ratio: 4/5; }
+  .media-3 { grid-column: span 4; aspect-ratio: 1/1; }
+  .media-4 { grid-column: span 8; aspect-ratio: 16/9; }
+  .media-5 { grid-column: span 6; aspect-ratio: 16/10; }
+  .media-6 { grid-column: span 6; aspect-ratio: 16/10; }
+  @media (max-width: 1024px) {
+    .gallery-grid { grid-template-columns: repeat(6, 1fr); }
+    .media-1, .media-4, .media-5, .media-6 { grid-column: span 6; }
+    .media-2 { grid-column: span 3; aspect-ratio: 1/1; }
+    .media-3 { grid-column: span 3; }
+  }
+  @media (max-width: 640px) {
+    .media-1, .media-2, .media-3, .media-4, .media-5, .media-6 {
+      grid-column: span 6; aspect-ratio: 4/3;
+    }
+  }
+
+  /* ============ NOTES ============ */
+  #notes {
+    padding: 10rem 2rem;
+    background: var(--void-dark);
+    border-top: 1px solid var(--ink-ghost);
+    border-bottom: 1px solid var(--ink-ghost);
+  }
+  .notes-list {
+    max-width: 1100px;
+    margin: 4rem auto 0;
+  }
+  .note-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 2.5fr 120px;
+    gap: 2rem;
+    align-items: start;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--ink-ghost);
+    transition: background 0.4s var(--ease-quiet), padding-left 0.4s var(--ease-quiet);
+    cursor: none;
+  }
+  .note-row:hover {
+    background: rgba(234, 0, 0, 0.04);
+    padding-left: 1rem;
+  }
+  .note-row:last-child { border-bottom: 1px solid var(--ink-ghost); }
+  .note-num {
+    font: 400 12px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--neon-red);
+  }
+  .note-loc {
+    font: 700 1.125rem/1.3 'Inter', sans-serif;
+  }
+  .note-loc small {
+    display: block;
+    font: 400 10px/1.4 'JetBrains Mono', monospace;
+    color: var(--ink-mute);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+  .note-body {
+    font: 400 0.95rem/1.6 'Inter', sans-serif;
+    color: var(--ink-soft);
+  }
+  .note-body em {
+    color: #fff;
+    font-style: normal;
+    border-bottom: 1px dashed var(--ink-ghost);
+  }
+  .note-date {
+    font: 400 10px/1.4 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+  @media (max-width: 900px) {
+    .note-row {
+      grid-template-columns: 50px 1fr;
+      gap: 1.5rem;
+    }
+    .note-body, .note-date { grid-column: 2; }
+    .note-date { text-align: left; margin-top: 0.5rem; }
+  }
+
+  /* ============ STATS ============ */
+  #stats { padding: 10rem 2rem; }
+  .stats-grid {
+    max-width: 1400px;
+    margin: 4rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+  @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat-block {
+    border-top: 1px solid var(--ink-ghost);
+    padding-top: 1.5rem;
+    position: relative;
+  }
+  .stat-block::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 0;
+    width: 32px; height: 1px;
+    background: var(--neon-red);
+  }
+  .stat-num {
+    font: 900 clamp(2.5rem, 5vw, 4rem)/1 'Inter', sans-serif;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+  .stat-num .unit {
+    font: 400 0.4em/1 'JetBrains Mono', monospace;
+    color: var(--ink-mute);
+    margin-left: 0.25rem;
+    letter-spacing: 0.1em;
+  }
+  .stat-label {
+    font: 400 11px/1.4 'JetBrains Mono', monospace;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .stat-detail {
+    font: 400 0.8rem/1.5 'Inter', sans-serif;
+    color: var(--ink-faint);
+    margin-top: 0.5rem;
+  }
+
+  /* ============ CTA ============ */
+  #cta {
+    padding: 12rem 2rem 8rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  #cta::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(234,0,0,0.18) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .cta-title {
+    font: 900 clamp(2.5rem, 7vw, 6rem)/0.95 'Inter', sans-serif;
+    letter-spacing: -0.03em;
+    margin-bottom: 2rem;
+    max-width: 900px;
+    margin-left: auto; margin-right: auto;
+  }
+  .cta-title em {
+    font-style: normal;
+    color: var(--neon-red);
+  }
+  .cta-sub {
+    max-width: 580px; margin: 0 auto 3rem;
+    font: 400 1.0625rem/1.65 'Inter', sans-serif;
+    color: var(--ink-soft);
+  }
+  .cta-button {
+    display: inline-flex; align-items: center; gap: 1rem;
+    padding: 1.25rem 2.5rem;
+    border: 1px solid #fff;
+    background: transparent;
+    color: #fff;
+    font: 700 13px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    transition: background 0.4s var(--ease-quiet), color 0.4s var(--ease-quiet), border-color 0.4s var(--ease-quiet);
+    position: relative;
+  }
+  .cta-button:hover {
+    background: var(--neon-red);
+    border-color: var(--neon-red);
+    color: #fff;
+  }
+  .cta-button-arrow {
+    width: 14px; height: 14px;
+    transition: transform 0.4s var(--ease-quiet);
+  }
+  .cta-button:hover .cta-button-arrow {
+    transform: translateX(4px);
+  }
+  .cta-channels {
+    margin-top: 3rem;
+    display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;
+    font: 400 11px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .cta-channels a {
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink-ghost);
+    padding-bottom: 2px;
+    transition: border-color 0.3s var(--ease-quiet), color 0.3s var(--ease-quiet);
+  }
+  .cta-channels a:hover {
+    color: var(--neon-red);
+    border-color: var(--neon-red);
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    padding: 4rem 2rem 2rem;
+    border-top: 1px solid var(--ink-ghost);
+    position: relative;
+    z-index: 2;
+    background: var(--void-black);
+  }
+  .footer-grid {
+    max-width: 1400px; margin: 0 auto 3rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 900px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .footer-brand {
+    font: 700 1.5rem/1 'JetBrains Mono', monospace;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .footer-brand-tag {
+    font: 400 11px/1.6 'JetBrains Mono', monospace;
+    color: var(--ink-mute);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    max-width: 320px;
+  }
+  .footer-col h4 {
+    font: 400 10px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 1.5rem;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 0.75rem; }
+  .footer-col a {
+    color: #fff;
+    text-decoration: none;
+    font: 400 0.9rem/1 'Inter', sans-serif;
+    transition: color 0.3s var(--ease-quiet);
+  }
+  .footer-col a:hover { color: var(--neon-red); }
+  .footer-bottom {
+    max-width: 1400px; margin: 0 auto;
+    border-top: 1px solid var(--ink-ghost);
+    padding-top: 2rem;
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+    font: 400 10px/1.4 'JetBrains Mono', monospace;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+    .manifesto-text .word { opacity: 1 !important; filter: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="custom-cursor"></div>
+<canvas id="particle-canvas"></canvas>
+
+<nav>
+  <div class="nav-logo">DANNY · MAMESAH</div>
+  <div class="nav-meta">
+    <span class="nav-status">ON THE ROAD</span>
+    <span class="nav-clock" id="nav-clock">— : — : —</span>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">EST. 2018 — JAKARTA / EN ROUTE</div>
+    <h1 id="hero-title">MAMESAH STUDIO</h1>
+    <div class="hero-sub-row">
+      <p class="hero-sub">
+        Studio kreatif independen yang sedang berjalan. Klien kami sedang keliling Eropa
+        dan Asia Tenggara — naskah, render, dan revisi tetap mengalir dari kabin pesawat,
+        ruang tunggu bandara, dan meja hotel kecil di pinggir kota asing.
+      </p>
+      <div class="hero-quote">
+        <strong>"Studio tidak harus diam di satu kota."</strong>
+        Catatan lapangan, bukan halaman About. Diperbarui setiap kali sinyal Wi-Fi membolehkan.
+      </div>
+    </div>
+    <div class="hero-meta-row">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">SAAT INI</span>
+        <span class="hero-meta-value"><span class="dot-live"></span>LISBON · PT</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">WAKTU LOKAL</span>
+        <span class="hero-meta-value" id="hero-clock">— : —</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">SLOT PROYEK</span>
+        <span class="hero-meta-value">04 / 12 TERISI</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">RESPON</span>
+        <span class="hero-meta-value">≤ 24 JAM</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== MANIFESTO ========== -->
+<section id="manifesto">
+  <div class="manifesto-container">
+    <div class="eyebrow">MANIFESTO · 001</div>
+    <p class="manifesto-text" id="manifesto-text">
+      Studio ini tidak percaya pada cetak biru yang sempurna. Kami percaya pada tangan yang kotor, pada revisi ketujuh di pagi hari, pada file yang bernama <span class="accent">final_beneran_v3.psd</span>. Pekerjaan kami adalah menumpuk keputusan-keputusan kecil sampai mereka berat, sampai mereka terasa seperti sesuatu yang tidak bisa lagi dipindahkan. Jika hasil akhirnya masih bisa kamu bayangkan sebelum mulai, berarti kami belum cukup bekerja.
+    </p>
+    <div class="manifesto-footer">
+      <div class="manifesto-sign">— D. MAMESAH, FROM A WINDOW SEAT SOMEWHERE</div>
+      <div class="manifesto-sign muted">FIELD NOTE / 14.03</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== WORKS ========== -->
+<section id="works">
+  <div class="works-intro">
+    <div class="eyebrow">SELECTED — 2023 / 2024</div>
+    <div class="works-header-row">
+      <h2 class="section-title" style="font: 900 clamp(2.5rem, 6vw, 5rem)/1 'Inter', sans-serif; letter-spacing: -0.02em;">
+        Proyek yang dikirim<br>dari kota asing.
+      </h2>
+      <div class="works-counter"><span>06</span> / 06 — GESER UNTUK LIHAT</div>
+    </div>
+  </div>
+
+  <div id="works-pin-wrap">
+    <div class="works-pin">
+      <div class="works-track" id="works-track">
+
+        <article class="work-card" data-cursor-hover>
+          <div class="work-card-image" style="background-image: url(https://picsum.photos/seed/mamesah-work-kapsul-coffee/720/540)"></div>
+          <div class="work-card-info">
+            <div>
+              <div class="work-card-meta"><span class="work-card-num">01 / 06</span><span class="work-card-loc">LISBON</span></div>
+            </div>
+            <div class="work-card-title">KAPSUL — Identitas Roastery</div>
+            <div class="work-card-meta"><span>BRAND · PACKAGING</span><span>2024</span></div>
+          </div>
+        </article>
+
+        <article class="work-card" data-cursor-hover>
+          <div class="work-card-image" style="background-image: url(https://picsum.photos/seed/mamesah-work-lautan-doc/720/540)"></div>
+          <div class="work-card-info">
+            <div>
+              <div class="work-card-meta"><span class="work-card-num">02 / 06</span><span class="work-card-loc">UBUD</span></div>
+            </div>
+            <div class="work-card-title">LAUTAN — Seri Dokumenter</div>
+            <div class="work-card-meta"><span>FILM · DIRECTION</span><span>2024</span></div>
+          </div>
+        </article>
+
+        <article class="work-card" data-cursor-hover>
+          <div class="work-card-image" style="background-image: url(https://picsum.photos/seed/mamesah-work-gudang-skrip/720/540)"></div>
+          <div class="work-card-info">
+            <div>
+              <div class="work-card-meta"><span class="work-card-num">03 / 06</span><span class="work-card-loc">TOKYO</span></div>
+            </div>
+            <div class="work-card-title">GUDANG SKRIP — Layout Editorial</div>
+            <div class="work-card-meta"><span>PRINT · TYPOGRAPHY</span><span>2024</span></div>
+          </div>
+        </article>
+
+        <article class="work-card" data-cursor-hover>
+          <div class="work-card-image" style="background-image: url(https://picsum.photos/seed/mamesah-work-studio-rumah/720/540)"></div>
+          <div class="work-card-info">
+            <div>
+              <div class="work-card-meta"><span class="work-card-num">04 / 06</span><span class="work-card-loc">MARRAKECH</span></div>
+            </div>
+            <div class="work-card-title">STUDIO RUMAH — Brand Interior</div>
+            <div class="work-card-meta"><span>BRAND · SPACE</span><span>2023</span></div>
+          </div>
+        </article>
+
+        <article class="work-card" data-cursor-hover>
+          <div class="work-card-image" style="background-image: url(https://picsum.photos/seed/mamesah-work-pergi-film/720/540)"></div>
+          <div class="work-card-info">
+            <div>
+              <div class="work-card-meta"><span class="work-card-num">05 / 06</span><span class="work-card-loc">SEBERANG</span></div>
+            </div>
+            <div class="work-card-title">PERGI — Film Pendek</div>
+            <div class="work-card-meta"><span>FILM · EDITOR</span><span>2023</span></div>
+          </div>
+        </article>
+
+        <article class="work-card" data-cursor-hover>
+          <div class="work-card-image" style="background-image: url(https://picsum.photos/seed/mamesah-work-ganjil-type/720/540)"></div>
+          <div class="work-card-info">
+            <div>
+              <div class="work-card-meta"><span class="work-card-num">06 / 06</span><span class="work-card-loc">YOGYAKARTA</span></div>
+            </div>
+            <div class="work-card-title">GANJIL — Typeface Release</div>
+            <div class="work-card-meta"><span>TYPE · WEB</span><span>2023</span></div>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="works-progress-wrap">
+        <div class="works-progress-label">PROGRESS · GESER</div>
+        <div class="works-progress"><div class="works-progress-bar" id="works-progress-bar"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== GALLERY ========== -->
+<section id="gallery">
+  <div class="container">
+    <div class="eyebrow">FIELD FRAMES — 2024</div>
+    <div class="works-header-row">
+      <h2 class="section-title" style="font: 900 clamp(2.5rem, 6vw, 5rem)/1 'Inter', sans-serif; letter-spacing: -0.02em;">
+        Dua belas roll<br>film dari jalan.
+      </h2>
+      <div class="works-counter"><span>06</span> FRAME / DIPILIH DARI 240</div>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid">
+      <div class="media media-1">
+        <img src="https://picsum.photos/seed/mamesah-frame-portrait-lisbon/1200/760" alt="">
+        <div class="media-label">LISBON · 03.24 · PORTRAIT 400TX</div>
+      </div>
+      <div class="media media-2">
+        <img src="https://picsum.photos/seed/mamesah-frame-street-marrakech/900/1100" alt="">
+        <div class="media-label">MARRAKECH · 02.24 · EKTAR 100</div>
+      </div>
+      <div class="media media-3">
+        <img src="https://picsum.photos/seed/mamesah-frame-room-tokyo/900/900" alt="">
+        <div class="media-label">TOKYO · 01.24 · PORTRA 800</div>
+      </div>
+      <div class="media media-4">
+        <img src="https://picsum.photos/seed/mamesah-frame-light-ubud/1600/900" alt="">
+        <div class="media-label">UBUD · 12.23 · GOLD 200</div>
+      </div>
+      <div class="media media-5">
+        <img src="https://picsum.photos/seed/mamesah-frame-motion-seoul/1400/900" alt="">
+        <div class="media-label">SEOUL · 11.23 · CINESTILL 800T</div>
+      </div>
+      <div class="media media-6">
+        <img src="https://picsum.photos/seed/mamesah-frame-detail-hanoi/1400/900" alt="">
+        <div class="media-label">HANOI · 10.23 · TRI-X 400</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== NOTES ========== -->
+<section id="notes">
+  <div class="container">
+    <div class="eyebrow">JOURNAL — ON THE ROAD</div>
+    <div class="works-header-row">
+      <h2 class="section-title" style="font: 900 clamp(2.5rem, 6vw, 5rem)/1 'Inter', sans-serif; letter-spacing: -0.02em;">
+        Catatan lapangan,<br>bukan newsletter.
+      </h2>
+      <div class="works-counter"><span>04</span> ENTRI TERAKHIR</div>
+    </div>
+
+    <div class="notes-list">
+
+      <div class="note-row" data-cursor-hover>
+        <div class="note-num">N° 014</div>
+        <div class="note-loc">LISBON<small>PORTUGAL · 38.7°N</small></div>
+        <div class="note-body">
+          Cahaya di sini bergerak dua jam lebih lambat daripada di Jakarta. Sebuah revisi logo yang
+          biasanya selesai sebelum makan siang, di sini baru kelar menjelang maghrib — dan ternyata
+          <em>itu yang membuatnya lebih baik</em>. Pelajaran hari ini: jangan melawan matahari.
+        </div>
+        <div class="note-date">14 · 03 · 24<br>17:42 LOKAL</div>
+      </div>
+
+      <div class="note-row" data-cursor-hover>
+        <div class="note-num">N° 013</div>
+        <div class="note-loc">MARRAKECH<small>MOROCCO · 31.6°N</small></div>
+        <div class="note-body">
+          Seorang tukang kulit di souk membentuk warna dengan tangan yang sama selama 40 tahun.
+          Saya kirim palet brand ke klien dari atap hotel jam 11 malam, lalu tidur. Besoknya klien
+          balas: <em>"ini terlalu matang."</em> Mungkin. Tapi matang itu yang dicari orang.
+        </div>
+        <div class="note-date">02 · 03 · 24<br>23:11 LOKAL</div>
+      </div>
+
+      <div class="note-row" data-cursor-hover>
+        <div class="note-num">N° 012</div>
+        <div class="note-loc">TOKYO<small>JAPAN · 35.7°N</small></div>
+        <div class="note-body">
+          Yang paling sunyi di Shibuya bukan sudut yang kosong, tapi sudut yang diisi dengan sangat
+          tepat. Saya pelajari ulang semua sistem grid kami malam itu, di sebuah izakaya kecil dekat
+          Shimokitazawa. <em>Hierarki bukan soal ukuran, tapi soal napas.</em>
+        </div>
+        <div class="note-date">19 · 01 · 24<br>21:08 LOKAL</div>
+      </div>
+
+      <div class="note-row" data-cursor-hover>
+        <div class="note-num">N° 011</div>
+        <div class="note-loc">UBUD<small>BALI · 8.5°S</small></div>
+        <div class="note-body">
+          Pulang ke Indonesia bukan untuk berhenti, tapi untuk mengingat bahwa tanah kita punya
+          ritmenya sendiri. Render final untuk <em>Kapsul</em> dikirim dari sebuah villa yang
+          kipas anginnya bunyi — dan klien justru bilang itu yang bikin mereka percaya.
+        </div>
+        <div class="note-date">22 · 12 · 23<br>06:33 LOKAL</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== STATS ========== -->
+<section id="stats">
+  <div class="container">
+    <div class="eyebrow">DATA — SEJAK 2018</div>
+    <div class="works-header-row">
+      <h2 class="section-title" style="font: 900 clamp(2.5rem, 6vw, 5rem)/1 'Inter', sans-serif; letter-spacing: -0.02em;">
+        Angka-angka kecil<br>yang kami banggakan.
+      </h2>
+      <div class="works-counter"><span>04</span> METRIK OPERASI</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-block">
+        <div class="stat-num" data-count="142"><span class="num-val">0</span><span class="unit">proyek</span></div>
+        <div class="stat-label">SELESAI · 2018→</div>
+        <div class="stat-detail">Dari identitas roastery ke typeface publik.</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num" data-count="23"><span class="num-val">0</span><span class="unit">kota</span></div>
+        <div class="stat-label">DIPROSES DARI</div>
+        <div class="stat-detail">Termasuk tiga bandara transit.</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num" data-count="6"><span class="num-val">0</span><span class="unit">tahun</span></div>
+        <div class="stat-label">OPERASI · NON-STOP</div>
+        <div class="stat-detail">Studio dibuka 14 Maret 2018 di Jakarta.</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num"><span class="num-val">24</span><span class="unit">jam</span></div>
+        <div class="stat-label">RESPON · RATA-RATA</div>
+        <div class="stat-detail">Termasuk dari zona waktu yang berbeda 7 jam.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section id="cta">
+  <div class="container-narrow">
+    <div class="eyebrow" style="justify-content: center; display: inline-flex;">MULAI PROYEK · Q2 2024</div>
+    <h2 class="cta-title">
+      Punya ide yang belum<br>mau diam? <em>Mari kita jalan.</em>
+    </h2>
+    <p class="cta-sub">
+      Slot terbisa untuk April–Mei 2024. Klien travelling tetap welcome —
+      kami biasa bekerja dari zona waktu yang berbeda.
+    </p>
+    <a href="mailto:halo@mamesah.studio" class="cta-button" data-cursor-hover>
+      Kirim Brief
+      <svg class="cta-button-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 12h14M13 6l6 6-6 6"/>
+      </svg>
+    </a>
+    <div class="cta-channels">
+      <a href="https://www.youtube.com/@dannymamesahstudio" target="_blank" data-cursor-hover>YOUTUBE ↗</a>
+      <a href="#" data-cursor-hover>INSTAGRAM ↗</a>
+      <a href="#" data-cursor-hover>BEHANCE ↗</a>
+      <a href="mailto:halo@mamesah.studio" data-cursor-hover>EMAIL ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">DANNY · MAMESAH</div>
+      <div class="footer-brand-tag">
+        Studio kreatif independen. Berbasis di mana pun klien berada —
+        saat ini di Lisbon, nanti mungkin di tempat lain.
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Studio</h4>
+      <ul>
+        <li><a href="#" data-cursor-hover>Tentang</a></li>
+        <li><a href="#" data-cursor-hover>Proses</a></li>
+        <li><a href="#" data-cursor-hover>Layanan</a></li>
+        <li><a href="#" data-cursor-hover>Tim</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Karya</h4>
+      <ul>
+        <li><a href="#" data-cursor-hover>Brand</a></li>
+        <li><a href="#" data-cursor-hover>Film</a></li>
+        <li><a href="#" data-cursor-hover>Editorial</a></li>
+        <li><a href="#" data-cursor-hover>Typeface</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Hubungi</h4>
+      <ul>
+        <li><a href="mailto:halo@mamesah.studio" data-cursor-hover>halo@mamesah.studio</a></li>
+        <li><a href="#" data-cursor-hover>+62 812-xxxx-xxxx</a></li>
+        <li><a href="#" data-cursor-hover>Jadwal panggilan</a></li>
+        <li><a href="#" data-cursor-hover>FAQ singkat</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2018–2024 DANNY MAMESAH STUDIO</span>
+    <span>VR.04 — DIPERBARUI DARI LISBON · 14.03.24</span>
+    <span>JIKA MEMBACA INI, KAMIRN SEDANG ONLINE</span>
+  </div>
+</footer>
+
+<script type="module">
+  import * as THREE from 'three';
+
+  /* ===================================
+     1. CUSTOM CURSOR
+  =================================== */
+  const cursor = document.getElementById('custom-cursor');
+  const targetPos = { x: window.innerWidth/2, y: window.innerHeight/2 };
+  const cursorPos = { x: targetPos.x, y: targetPos.y };
+  let isHover = false;
+
+  window.addEventListener('mousemove', (e) => {
+    targetPos.x = e.clientX;
+    targetPos.y = e.clientY;
+  });
+  window.addEventListener('mouseover', (e) => {
+    const t = e.target;
+    isHover = !!(t.closest('a, button, [data-cursor-hover], .work-card, .note-row, .cta-button'));
+  });
+
+  (function loop() {
+    cursorPos.x += (targetPos.x - cursorPos.x) * 0.15;
+    cursorPos.y += (targetPos.y - cursorPos.y) * 0.15;
+    const s = isHover ? 48 : 12;
+    cursor.style.transform = `translate(${cursorPos.x - s/2}px, ${cursorPos.y - s/2}px)`;
+    cursor.style.width = s + 'px';
+    cursor.style.height = s + 'px';
+    cursor.style.opacity = isHover ? 0.55 : 1;
+    requestAnimationFrame(loop);
+  })();
+
+  /* ===================================
+     2. PARTICLE FIELD (three.js)
+  =================================== */
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+  const canvas = document.getElementById('particle-canvas');
+
+  if (!reducedMotion) {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 100);
+    camera.position.z = 8;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    function makePoints(count, color, sizeScale, spread) {
+      const positions = new Float32Array(count*3);
+      const sizes = new Float32Array(count);
+      const offsets = new Float32Array(count);
+      for (let i = 0; i < count; i++) {
+        positions[i*3]   = (Math.random()-0.5) * spread.x;
+        positions[i*3+1] = (Math.random()-0.5) * spread.y;
+        positions[i*3+2] = (Math.random()-0.5) * spread.z;
+        sizes[i]   = (Math.random() * 1.6 + 0.4) * sizeScale;
+        offsets[i] = Math.random() * Math.PI * 2;
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('aSize',    new THREE.BufferAttribute(sizes, 1));
+      geo.setAttribute('aOffset',  new THREE.BufferAttribute(offsets, 1));
+
+      const mat = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 },
+          uColor: { value: new THREE.Color(color) },
+        },
+        vertexShader: `
+          attribute float aSize; attribute float aOffset;
+          uniform float uTime; varying float vAlpha;
+          void main() {
+            vec3 p = position;
+            p.y += sin(uTime*0.3 + aOffset) * 0.4;
+            p.x += cos(uTime*0.25 + aOffset*0.7) * 0.2;
+            vec4 mv = modelViewMatrix * vec4(p, 1.0);
+            gl_PointSize = aSize * (180.0 / -mv.z);
+            gl_Position = projectionMatrix * mv;
+            vAlpha = 0.55 + 0.45 * sin(uTime*0.6 + aOffset);
+          }`,
+        fragmentShader: `
+          varying float vAlpha; uniform vec3 uColor;
+          void main() {
+            vec2 uv = gl_PointCoord - vec2(0.5);
+            if (length(uv) > 0.5) discard;
+            gl_FragColor = vec4(uColor, smoothstep(0.5, 0.0, length(uv)) * vAlpha * 0.55);
+          }`,
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      });
+      return new THREE.Points(geo, mat);
+    }
+
+    const COUNT_WHITE = isCoarse ? 600 : 1200;
+    const COUNT_RED    = isCoarse ? 25  : 50;
+    const COUNT_GREEN  = isCoarse ? 10  : 20;
+    const ptsWhite = makePoints(COUNT_WHITE, 0xffffff, 1.0, {x:18, y:12, z:12});
+    const ptsRed   = makePoints(COUNT_RED,   0xea0000, 1.8, {x:18, y:12, z:12});
+    const ptsGreen = makePoints(COUNT_GREEN, 0x00ff88, 1.5, {x:18, y:12, z:12});
+    scene.add(ptsWhite); scene.add(ptsRed); scene.add(ptsGreen);
+
+    const mouseTarget = { x: 0, y: 0 };
+    const mouseCur = { x: 0, y: 0 };
+    if (!isCoarse) {
+      window.addEventListener('mousemove', (e) => {
+        mouseTarget.x = (e.clientX / window.innerWidth - 0.5) * 0.3;
+        mouseTarget.y = (e.clientY / window.innerHeight - 0.5) * 0.3;
+      });
+    }
+
+    let visible = true;
+    const observer = new IntersectionObserver((entries) => {
+      visible = entries[0].isIntersecting;
+    });
+    observer.observe(canvas);
+
+    const clock = new THREE.Clock();
+    function animate() {
+      if (visible) {
+        const t = clock.getElapsedTime();
+        ptsWhite.material.uniforms.uTime.value = t;
+        ptsRed.material.uniforms.uTime.value   = t;
+        ptsGreen.material.uniforms.uTime.value = t;
+        mouseCur.x += (mouseTarget.x - mouseCur.x) * 0.04;
+        mouseCur.y += (mouseTarget.y - mouseCur.y) * 0.04;
+        scene.rotation.y = mouseCur.x;
+        scene.rotation.x = mouseCur.y;
+        renderer.render(scene, camera);
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  }
+
+  /* ===================================
+     3. HERO SCRAMBLE DECODE
+  =================================== */
+  const titleEl = document.getElementById('hero-title');
+  const TARGET = 'MAMESAH STUDIO';
+  const CHARS = '!<>-_\\/[]{}—=+*^?#________01';
+
+  function runScramble() {
+    titleEl.classList.add('is-decoding');
+    let iter = 0;
+    const max = TARGET.length * 8;
+    (function tick() {
+      titleEl.textContent = TARGET.split('').map((ch, i) => {
+        if (ch === ' ') return ' ';
+        if (i < iter / 8) return TARGET[i];
+        return CHARS[Math.floor(Math.random() * CHARS.length)];
+      }).join('');
+      iter += 1;
+      if (iter >= max) {
+        titleEl.textContent = TARGET;
+        titleEl.classList.remove('is-decoding');
+        return;
+      }
+      setTimeout(tick, 40);
+    })();
+  }
+  // Slight delay so fonts settle
+  setTimeout(runScramble, 400);
+
+  /* ===================================
+     4. LIVE CLOCK (Lisbon)
+  =================================== */
+  function updateClocks() {
+    const now = new Date();
+    try {
+      const lisbon = new Intl.DateTimeFormat('id-ID', {
+        timeZone: 'Europe/Lisbon',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      }).format(now);
+      const navLisbon = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Lisbon',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      }).format(now);
+      const heroEl = document.getElementById('hero-clock');
+      const navEl  = document.getElementById('nav-clock');
+      if (heroEl) heroEl.textContent = lisbon + ' WET';
+      if (navEl)  navEl.textContent  = navLisbon + ' UTC+0';
+    } catch(e) {
+      const t = now.toTimeString().slice(0,8);
+      const heroEl = document.getElementById('hero-clock');
+      const navEl  = document.getElementById('nav-clock');
+      if (heroEl) heroEl.textContent = t;
+      if (navEl)  navEl.textContent = t;
+    }
+  }
+  updateClocks();
+  setInterval(updateClocks, 1000);
+
+  /* ===================================
+     5. MANIFESTO BLUR SCRUB (GSAP)
+  =================================== */
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.fonts.ready.then(() => {
+    const txt = document.getElementById('manifesto-text');
+    // Preserve span.accent inside
+    const walk = (node) => {
+      const children = Array.from(node.childNodes);
+      children.forEach(child => {
+        if (child.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          const parts = child.textContent.split(/(\s+)/);
+          parts.forEach(p => {
+            if (/^\s+$/.test(p)) {
+              frag.appendChild(document.createTextNode(p));
+            } else if (p) {
+              const s = document.createElement('span');
+              s.className = 'word';
+              s.textContent = p;
+              frag.appendChild(s);
+            }
+          });
+          node.replaceChild(frag, child);
+        } else if (child.nodeType === 1 && child.classList.contains('accent')) {
+          // wrap inner text of accent span into word spans
+          const innerText = child.textContent;
+          child.textContent = '';
+          const parts = innerText.split(/(\s+)/);
+          parts.forEach(p => {
+            if (/^\s+$/.test(p)) {
+              child.appendChild(document.createTextNode(p));
+            } else if (p) {
+              const s = document.createElement('span');
+              s.className = 'word accent';
+              s.textContent = p;
+              child.appendChild(s);
+            }
+          });
+        }
+      });
+    };
+    walk(txt);
+
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: '#manifesto',
+        start: 'top 75%',
+        end: 'center 50%',
+        scrub: true,
+      },
+    }).fromTo('#manifesto-text .word',
+      { opacity: 0, filter: 'blur(12px) brightness(30%)' },
+      { opacity: 1, filter: 'blur(0px) brightness(100%)', stagger: 0.04, ease: 'sine.out' });
+  });
+
+  /* ===================================
+     6. HORIZONTAL PIN SCROLL (works)
+  =================================== */
+  const pinWrap = document.getElementById('works-pin-wrap');
+  const track = document.getElementById('works-track');
+  const progressBar = document.getElementById('works-progress-bar');
+
+  function setupWorksPin() {
+    if (window.innerWidth <= 1024) return;
+
+    let scrollWidth = 0;
+    let lastY = window.scrollY;
+    let skewTimeout;
+
+    function recalc() {
+      scrollWidth = track.scrollWidth - window.innerWidth;
+      pinWrap.style.height = (window.innerHeight + Math.max(0, scrollWidth)) + 'px';
+    }
+    recalc();
+    window.addEventListener('resize', recalc);
+
+    window.addEventListener('scroll', () => {
+      const rect = pinWrap.getBoundingClientRect();
+      if (rect.top <= 0 && rect.top >= -scrollWidth) {
+        const p = -rect.top / scrollWidth;
+        track.style.transform = `translate3d(${-p * scrollWidth}px, 0, 0)`;
+        if (progressBar) progressBar.style.width = (p * 100) + '%';
+
+        const v = window.scrollY - lastY;
+        lastY = window.scrollY;
+        const skew = Math.max(-8, Math.min(8, v * 0.4));
+        track.querySelectorAll('.work-card').forEach(c => {
+          c.style.transform = `skewY(${skew}deg)`;
+        });
+        clearTimeout(skewTimeout);
+        skewTimeout = setTimeout(() => {
+          track.querySelectorAll('.work-card').forEach(c => {
+            c.style.transform = 'skewY(0deg)';
+          });
+        }, 180);
+      }
+    }, { passive: true });
+  }
+  setupWorksPin();
+
+  /* ===================================
+     7. DIRECTIONAL CLIP (gallery)
+  =================================== */
+  const dirs = [
+    'inset(0 100% 0 0)',
+    'inset(0 0 100% 0)',
+    'inset(0 0 0 100%)',
+    'inset(100% 0 0 0)',
+  ];
+
+  const galleryGrid = document.getElementById('gallery-grid');
+  if (galleryGrid) {
+    ScrollTrigger.create({
+      trigger: galleryGrid,
+      start: 'top 80%',
+      once: true,
+      onEnter: () => {
+        galleryGrid.querySelectorAll('.media').forEach((cell, i) => {
+          gsap.fromTo(cell,
+            { clipPath: dirs[i % dirs.length] },
+            { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.3, ease: 'power4.inOut', delay: i * 0.1 }
+          );
+          gsap.fromTo(cell.querySelector('img'),
+            { scale: 1.3 },
+            { scale: 1.1, duration: 1.6, ease: 'power3.out', delay: i * 0.1 }
+          );
+        });
+      },
+    });
+  }
+
+  /* ===================================
+     8. STATS COUNT-UP
+  =================================== */
+  document.querySelectorAll('.stat-block[data-count] .num-val, .stat-num[data-count] .num-val').forEach(el => {
+    const block = el.closest('.stat-block') || el.closest('.stat-num');
+    const target = parseInt(block.getAttribute('data-count'), 10) || 0;
+    const obj = { val: 0 };
+    ScrollTrigger.create({
+      trigger: block,
+      start: 'top 85%',
+      once: true,
+      onEnter: () => {
+        gsap.to(obj, {
+          val: target,
+          duration: 2,
+          ease: 'power2.out',
+          onUpdate: () => { el.textContent = Math.round(obj.val); }
+        });
+      }
+    });
+  });
+
+  /* ===================================
+     9. SECTION TITLES — gentle reveal
+  =================================== */
+  document.querySelectorAll('.section-title, .cta-title').forEach(el => {
+    gsap.fromTo(el,
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+      }
+    );
+  });
+
+</script>
+</body>
+</html>

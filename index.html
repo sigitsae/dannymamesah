@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danny's Project Studio — Catatan Perjalanan &amp; Video Travel</title>
+<meta name="description" content="Artikel dan video perjalanan: destinasi, kuliner, budaya, dan olahraga dari Dubai, Abu Dhabi, New York, Washington DC, Brighton, dan St Andrews.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Danny's Project Studio — Catatan Perjalanan &amp; Video Travel">
+<meta property="og:description" content="Artikel dan video perjalanan dari seluruh dunia.">
+<meta property="og:image" content="">
+<meta name="theme-color" content="#f7f1e5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,600&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="home">
+
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="index.html" aria-label="Danny's Project Studio, beranda">
+      <span class="brand-mark">D</span>Danny's Project Studio
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Buka menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <ul class="nav-links">
+      <li><a href="#rute">Rute</a></li>
+      <li><a href="#cerita">Cerita</a></li>
+      <li><a href="#youtube">YouTube</a></li>
+      <li><a href="#tentang">Tentang</a></li>
+    </ul>
+    <a class="btn btn-primary nav-cta" href="https://www.youtube.com/@dannymamesahstudio?sub_confirmation=1" target="_blank" rel="noopener">Subscribe</a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Catatan perjalanan · Video &amp; tulisan</p>
+        <h1 class="h-display">Dari layar ke <em>halaman</em>: cerita perjalanan yang bisa dibaca dan ditonton.</h1>
+        <p class="lead">Setiap video di channel YouTube kami punya cerita di baliknya. Di sini semuanya ditulis ulang: tempat, rasa, dan suasana yang tidak sempat masuk ke kamera.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#cerita">Mulai membaca</a>
+          <a class="btn btn-ghost" href="https://www.youtube.com/@dannymamesahstudio" target="_blank" rel="noopener">Kunjungi channel ↗</a>
+        </div>
+      </div>
+      <div id="hero-card"></div>
+    </div>
+  </section>
+
+  <div class="marquee" id="marquee"></div>
+
+  <!-- RUTE -->
+  <section id="rute">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Rute perjalanan</p>
+          <h2 class="h-section">Empat tujuan, satu perjalanan panjang.</h2>
+        </div>
+        <p>Pilih satu tujuan untuk melihat semua cerita dari sana.</p>
+      </div>
+      <div class="routes" id="routes"></div>
+    </div>
+  </section>
+
+  <!-- CERITA -->
+  <section id="cerita" style="background: var(--paper-2); border-block: 1px solid var(--line);">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Semua cerita</p>
+          <h2 class="h-section">Artikel &amp; video terbaru</h2>
+        </div>
+        <p>Klik artikel untuk membaca cerita dan menonton videonya langsung di halaman.</p>
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Filter kategori"></div>
+      <div class="grid" id="article-grid"></div>
+    </div>
+  </section>
+
+  <!-- YOUTUBE -->
+  <section id="youtube" class="yt-band">
+    <div class="wrap yt-grid">
+      <div>
+        <p class="eyebrow">Di YouTube</p>
+        <h2 class="h-section">Lebih seru kalau ditonton.</h2>
+        <p>Subscribe channel Danny's Project Studio supaya tidak ketinggalan video perjalanan berikutnya. Artikel baru di situs ini akan menyusul setiap kali video baru tayang.</p>
+        <a class="btn btn-ghost" href="https://www.youtube.com/@dannymamesahstudio?sub_confirmation=1" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2C.5 9.1.5 12 .5 12s0 2.9.5 4.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-4.8.5-4.8s0-2.9-.5-4.8zM9.8 15.3V8.7l5.7 3.3-5.7 3.3z"/></svg>
+          Subscribe di YouTube
+        </a>
+      </div>
+      <div id="yt-video"></div>
+    </div>
+  </section>
+
+  <!-- TENTANG -->
+  <section id="tentang">
+    <div class="wrap about-grid">
+      <div>
+        <p class="eyebrow">Tentang channel</p>
+        <h2 class="h-section">Dokumentasi perjalanan bersama orang-orang tersayang.</h2>
+      </div>
+      <div>
+        <p id="about-text" style="margin-top:0;font-size:1.1rem"></p>
+        <div class="topics" id="topics"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <a class="brand" href="index.html"><span class="brand-mark">D</span>Danny's Project Studio</a>
+      <ul class="footer-links">
+        <li><a href="#rute">Rute</a></li>
+        <li><a href="#cerita">Cerita</a></li>
+        <li><a href="https://www.youtube.com/@dannymamesahstudio" target="_blank" rel="noopener">YouTube ↗</a></li>
+      </ul>
+    </div>
+    <p class="footer-bottom">© <span id="year">2026</span> Danny's Project Studio. Semua video dimiliki oleh pembuatnya dan disematkan dari YouTube.</p>
+  </div>
+</footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
