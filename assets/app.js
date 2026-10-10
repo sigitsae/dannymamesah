@@ -112,16 +112,17 @@
   }
 
   function facade(item, label = 'Tonton video') {
-    return `<button class="facade" type="button" data-inline-video="${esc(item.id)}" aria-label="Putar video: ${esc(item.title)}">
+    return `<button class="facade" type="button" data-inline-video="${esc(item.id)}"${item.playlist ? ` data-list="${esc(item.playlist)}"` : ''} aria-label="Putar video: ${esc(item.title)}">
       ${media(item)}
       <span class="facade-play">${I.play}</span>
       <span class="facade-label">${label}${item.duration ? ` <span>${fmtClock(item.duration)}</span>` : ''}</span>
     </button>`;
   }
 
-  const embedSrc = (id) => `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-  function iframe(id, title) {
-    return `<iframe src="${embedSrc(id)}" title="${esc(title || 'Video YouTube')}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+  const embedSrc = (id, list) => `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&modestbranding=1&playsinline=1${list ? `&list=${encodeURIComponent(list)}` : ''}`;
+  const watchUrl = (id, list) => `https://www.youtube.com/watch?v=${encodeURIComponent(id)}${list ? `&list=${encodeURIComponent(list)}` : ''}`;
+  function iframe(id, title, list) {
+    return `<iframe src="${embedSrc(id, list)}" title="${esc(title || 'Video YouTube')}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
   }
 
   /* =====================================================================
@@ -336,8 +337,9 @@
       e.preventDefault();
       const id = t.dataset.video, portrait = t.dataset.portrait === '1', title = t.dataset.title || '';
       frame.className = 'vm-frame ' + (portrait ? 'is-portrait' : 'is-landscape');
-      frame.innerHTML = iframe(id, title);
-      const watch = portrait ? `https://www.youtube.com/shorts/${encodeURIComponent(id)}` : `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
+      const list = t.dataset.list || '';
+      frame.innerHTML = iframe(id, title, list);
+      const watch = portrait ? `https://www.youtube.com/shorts/${encodeURIComponent(id)}` : watchUrl(id, list);
       caption.innerHTML = `<strong>${esc(title)}</strong><a href="${watch}" target="_blank" rel="noopener">Buka di YouTube ↗</a>`;
       d.showModal();
     });
@@ -348,7 +350,7 @@
     const f = e.target.closest('[data-inline-video]');
     if (!f) return;
     const wrap = document.createElement('div');
-    wrap.innerHTML = iframe(f.dataset.inlineVideo, f.getAttribute('aria-label'));
+    wrap.innerHTML = iframe(f.dataset.inlineVideo, f.getAttribute('aria-label'), f.dataset.list);
     f.replaceWith(wrap.firstElementChild);
   });
 
@@ -404,10 +406,127 @@
   /* =====================================================================
      PAGE: HOME
      ===================================================================== */
+  /* ---------- hero slider ---------- */
+  function heroSlides() {
+    const list = (window.HERO || [])
+      .map((h) => ({ ...h, a: ARTICLES.find((x) => x.slug === h.slug) }))
+      .filter((s) => s.a);
+    return list.length ? list : [{ a: ARTICLES[0] }];
+  }
+
+  // resolves the picture for a slide; portrait pictures get a framed layout
+  function slidePicture(s) {
+    const a = s.a;
+    if (typeof s.image === 'string') return { src: s.image, fb: s.image, portrait: !!s.portrait, still: false, pillar: false };
+    if (s.image) {
+      return { src: yt(s.image.id, s.image.still), fb: yt(s.image.id, 'hqdefault'), portrait: /^oar/.test(s.image.still) || !!s.portrait, still: isStill(s.image.still), pillar: false };
+    }
+    const vertical = !!a.vertical && !a.image;
+    return { src: imageOf(a), fb: fallbackOf(a), portrait: vertical, still: !vertical && isStill(a.still || 'maxres1', a.image), pillar: vertical };
+  }
+
+  function heroHtml(slides) {
+    const n = slides.length;
+    const slideHtml = slides.map((s, i) => {
+      const a = s.a, p = slidePicture(s);
+      const load = i === 0 ? { eager: true } : { lazy: false };
+      const Tag = i === 0 ? 'h1' : 'h2';
+      return `
+        <div class="hero-slide${i === 0 ? ' is-active' : ''}${p.portrait ? ' is-portrait' : ''}${p.pillar ? ' is-pillar' : ''}" role="group" aria-roledescription="slide" aria-label="${i + 1} dari ${n}: ${esc(s.label || a.title)}"${i ? ' aria-hidden="true" inert' : ''}>
+          <div class="hero-media${p.still ? ' is-still' : ''}">${img(p.src, p.fb, { ...load, cls: 'hero-img' })}</div>
+          ${p.portrait ? `<figure class="hero-portrait">${img(p.src, p.fb, { lazy: false })}</figure>` : ''}
+          <div class="wrap hero-content">
+            <div class="hero-inner">
+              <span class="kicker kicker-dot">${esc(s.label || 'Pilihan editor')} · ${esc(placeOf(a))}</span>
+              <${Tag} class="hero-title${a.title.length > 58 ? ' is-long' : ''}">${esc(a.title)}</${Tag}>
+              <p class="hero-dek">${esc(a.excerpt)}</p>
+              <div class="hero-meta"><span>${fmtDate(a.date)}</span><span>·</span><span>Video ${fmtMinutes(a.duration)}</span><span>·</span><span>${esc(catName(a.category))}</span></div>
+              <div class="hero-actions">
+                <a class="btn btn-light" href="${articleUrl(a)}">Baca cerita ${I.arrow}</a>
+                <button class="btn btn-outline-light" type="button" data-video="${esc(a.id)}"${a.playlist ? ` data-list="${esc(a.playlist)}"` : ''} data-title="${esc(a.title)}">${I.play} Tonton video</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    const nav = n > 1 ? `
+      <div class="wrap hero-nav">
+        <div class="hero-tabs" style="--n:${n}">
+          ${slides.map((s, i) => `<button class="hero-tab${i === 0 ? ' is-active' : ''}" type="button" data-slide="${i}" aria-label="Slide ${i + 1}: ${esc(s.label || s.a.title)}"${i === 0 ? ' aria-current="true"' : ''}><span class="bar"></span><span class="num">${String(i + 1).padStart(2, '0')}</span><span class="lbl">${esc(s.label || s.a.city || '')}</span></button>`).join('')}
+        </div>
+        <div class="hero-ctrl">
+          <button class="hero-btn" type="button" data-hero="prev" aria-label="Slide sebelumnya">${I.left}</button>
+          <button class="hero-btn" type="button" data-hero="pause" aria-label="Jeda slide" aria-pressed="false">
+            <svg class="icon i-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>${I.play.replace('class="icon"', 'class="icon i-play"')}
+          </button>
+          <button class="hero-btn" type="button" data-hero="next" aria-label="Slide berikutnya">${I.right}</button>
+        </div>
+      </div>` : '';
+
+    return `<section class="hero" aria-roledescription="carousel" aria-label="Sorotan perjalanan">
+      <div class="hero-slides">${slideHtml}</div>${nav}</section>`;
+  }
+
+  function bindHero(hero) {
+    const slides = $$('.hero-slide', hero), tabs = $$('.hero-tab', hero);
+    if (slides.length < 2) return;
+    let current = 0, userPaused = false;
+    const pauseBtn = $('[data-hero="pause"]', hero);
+
+    function go(i) {
+      i = (i + slides.length) % slides.length;
+      if (i === current) return;
+      [slides[current], slides[i]].forEach((s, k) => {
+        s.classList.toggle('is-active', k === 1);
+        if (k === 1) { s.removeAttribute('aria-hidden'); s.inert = false; } else { s.setAttribute('aria-hidden', 'true'); s.inert = true; }
+      });
+      tabs.forEach((t, k) => { t.classList.toggle('is-active', k === i); k === i ? t.setAttribute('aria-current', 'true') : t.removeAttribute('aria-current'); });
+      current = i;
+    }
+    const setPaused = (p) => hero.classList.toggle('is-paused', p);
+
+    // the active tab's progress bar is the timer: when it fills, advance
+    tabs.forEach((t) => $('.bar', t).addEventListener('animationend', () => go(current + 1)));
+    hero.addEventListener('click', (e) => {
+      const tab = e.target.closest('[data-slide]');
+      if (tab) go(Number(tab.dataset.slide));
+      const b = e.target.closest('[data-hero]');
+      if (!b) return;
+      if (b.dataset.hero === 'prev') go(current - 1);
+      if (b.dataset.hero === 'next') go(current + 1);
+      if (b.dataset.hero === 'pause') {
+        userPaused = !userPaused;
+        b.setAttribute('aria-pressed', String(userPaused));
+        b.setAttribute('aria-label', userPaused ? 'Lanjutkan slide' : 'Jeda slide');
+        hero.classList.toggle('is-stopped', userPaused);
+        setPaused(userPaused);
+      }
+    });
+    // pause while the visitor is reading or interacting
+    hero.addEventListener('mouseenter', () => setPaused(true));
+    hero.addEventListener('mouseleave', () => setPaused(userPaused));
+    hero.addEventListener('focusin', () => setPaused(true));
+    hero.addEventListener('focusout', (e) => { if (!hero.contains(e.relatedTarget)) setPaused(userPaused); });
+    hero.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') go(current + 1);
+      if (e.key === 'ArrowLeft') go(current - 1);
+    });
+    // swipe on touch screens
+    let x0 = null;
+    hero.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') x0 = e.clientX; });
+    hero.addEventListener('pointerup', (e) => {
+      if (x0 === null) return;
+      const dx = e.clientX - x0; x0 = null;
+      if (Math.abs(dx) > 50) go(current + (dx < 0 ? 1 : -1));
+    });
+    if (pauseBtn && matchMedia('(prefers-reduced-motion: reduce)').matches) { userPaused = true; hero.classList.add('is-stopped'); setPaused(true); pauseBtn.setAttribute('aria-pressed', 'true'); }
+  }
+
   function pageHome(main) {
-    const featured = ARTICLES.find((a) => a.featured) || ARTICLES[0];
-    const rest = ARTICLES.filter((a) => a !== featured);
-    const latest = rest.slice(0, 5);
+    const slides = heroSlides();
+    const heroArticles = slides.map((s) => s.a);
+    const latest = ARTICLES.filter((a) => !heroArticles.includes(a)).slice(0, 5);
     const theme = ARTICLES.filter((a) => a.category === 'otomotif').slice(0, 4);
     const themeShorts = SHORTS.filter((s) => s.category === 'otomotif').slice(0, 8);
     const playlist = ARTICLES.slice(0, 6);
@@ -415,21 +534,7 @@
     const collage = [SHORTS.find((s) => s.id === 'Baf9E1ri1wQ'), SHORTS.find((s) => s.id === 'iIHHy2HZvl4'), SHORTS.find((s) => s.id === 'Zuw_kMHmZSk')].filter(Boolean);
 
     main.innerHTML = `
-      <section class="hero">
-        <div class="hero-media${isStill(featured.still || 'maxres1', featured.image) ? ' is-still' : ''}">${img(imageOf(featured), fallbackOf(featured), { eager: true })}</div>
-        <div class="wrap hero-content">
-          <div class="hero-inner">
-            <span class="kicker kicker-dot">Pilihan editor · ${esc(placeOf(featured))}</span>
-            <h1 class="hero-title">${esc(featured.title)}</h1>
-            <p class="hero-dek">${esc(featured.excerpt)}</p>
-            <div class="hero-meta"><span>${fmtDate(featured.date)}</span><span>·</span><span>Video ${fmtMinutes(featured.duration)}</span><span>·</span><span>${esc(catName(featured.category))}</span></div>
-            <div class="hero-actions">
-              <a class="btn btn-light" href="${articleUrl(featured)}">Baca cerita ${I.arrow}</a>
-              <button class="btn btn-outline-light" type="button" data-video="${esc(featured.id)}" data-title="${esc(featured.title)}">${I.play} Tonton video</button>
-            </div>
-          </div>
-        </div>
-      </section>
+      ${heroHtml(slides)}
 
       <section class="section" id="terbaru">
         <div class="wrap">
@@ -450,7 +555,7 @@
             <div><span class="kicker kicker-dot">Destinasi</span><h2 class="section-title">Jelajahi dunia, satu negara sekaligus</h2></div>
             <p class="lede">Pilih negara untuk membaca semua cerita dan menonton videonya.</p>
           </div>
-          <div class="dest-grid">
+          <div class="dest-grid${(Object.keys(COUNTRIES).length + 3) % 4 === 0 ? ' has-feature' : ''}">
             ${Object.entries(COUNTRIES).map(([k, c]) => `
               <a class="dest reveal" href="${archiveUrl({ d: k })}">
                 ${img(yt(c.cover.id, c.cover.still), yt(c.cover.id, 'hqdefault'))}
@@ -553,13 +658,14 @@
       if (!b) return;
       const a = playlist[Number(b.dataset.index)];
       $$('.pl-item').forEach((x) => x.setAttribute('aria-current', String(x === b)));
-      frame.innerHTML = iframe(a.id, a.title);
+      frame.innerHTML = iframe(a.id, a.title, a.playlist);
       showInfo(a);
     });
 
     bindRail($('#rail-shorts'));
     bindRail($('#rail-theme'));
-    setMeta(`${SITE.name} · Catatan Perjalanan & Video Travel`, `${SITE.tagline}. ${SITE.about}`, imageOf(featured));
+    bindHero($('.hero', main));
+    setMeta(`${SITE.name} · Catatan Perjalanan & Video Travel`, `${SITE.tagline}. ${SITE.about}`, slidePicture(slides[0]).src);
   }
 
   /* =====================================================================
@@ -739,7 +845,7 @@
     related = related.slice(0, 3);
     const nearShorts = a.country ? SHORTS.filter((s) => s.country === a.country).slice(0, 12) : [];
     const url = location.href;
-    const ytUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(a.id)}`;
+    const ytUrl = watchUrl(a.id, a.playlist);
     const shareText = encodeURIComponent(`${a.title} — ${SITE.name}`);
 
     const crumbs = [`<a href="index.html">Beranda</a>`];
@@ -779,6 +885,7 @@
               <h2>Detail perjalanan</h2>
               <dl class="facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
               <a class="btn btn-yt btn-block" href="${ytUrl}" target="_blank" rel="noopener">${I.yt} Tonton di YouTube</a>
+              ${a.playlist ? `<a class="btn btn-dark btn-block" style="margin-top:.6rem" href="https://www.youtube.com/playlist?list=${encodeURIComponent(a.playlist)}" target="_blank" rel="noopener">${I.menu} Tonton playlist lengkap</a>` : ''}
               ${IG_URL ? `<a class="btn btn-outline btn-block" style="margin-top:.6rem" href="${IG_URL}" target="_blank" rel="noopener">${I.ig} Ikuti di Instagram</a>` : ''}
               <div class="share">
                 <h2>Bagikan</h2>

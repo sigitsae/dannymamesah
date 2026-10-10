@@ -23,7 +23,15 @@
                Jika kosong, situs memakai cuplikan dari video YouTube.
      still     (opsional) cuplikan video yang dipakai: maxres1 | maxres2 | maxres3
      vertical  (opsional) true jika cuplikan video direkam vertikal
-     featured  (opsional) true = tampil besar di halaman utama (pilih satu)
+     playlist  (opsional) ID playlist YouTube (bagian setelah list= pada link),
+               video lalu diputar di dalam playlist + muncul tombol "Tonton playlist lengkap"
+
+   SLIDE UTAMA (window.HERO) — gambar besar bergeser di halaman utama
+     slug      slug artikel yang ditampilkan
+     label     nama pendek di tombol navigasi slide
+     image     (opsional) foto lain untuk slide ini:
+                 "assets/img/foto.jpg"  atau  { id: 'ID video', still: 'maxres2' }
+                 Foto tegak (mis. still 'oar1' dari Shorts) otomatis tampil sebagai kartu potret.
 
    VIDEO SINGKAT (window.SHORTS) — YouTube Shorts, tampil sebagai video saja
    ===================================================================== */
@@ -48,10 +56,19 @@ window.COUNTRIES = {
   irlandia:   { name: 'Irlandia', blurb: 'Temple Bar, Guinness, Jameson, dan Titanic Belfast.', cover: { id: 'rWg4186j2TY', still: 'oardefault' }, banner: { id: 'mlHUCAMkUfI', still: 'maxres2' } },
   uea:        { name: 'Uni Emirat Arab', blurb: 'Istana kepresidenan, Ferrari World, dan petualangan daging onta.', cover: { id: 'XxKHfLL-g4w', still: 'oardefault' }, banner: { id: '6wctwf3QuKw', still: 'maxres1' } },
   skotlandia: { name: 'Skotlandia', blurb: 'St Andrews, kota tempat lahirnya golf.', cover: { id: '-Hg09FwQbS4', still: 'maxres2' }, banner: { id: 'aTkVF-SiFa4', still: 'maxres1' } },
-  indonesia:  { name: 'Indonesia', blurb: 'Dari Istana Negara sampai Danau Kelimutu di Flores.', cover: { id: 'fgSj4RwsrPY', still: 'oardefault' }, banner: { id: '4LLgqnUvhgY', still: 'maxres3' } },
+  indonesia:  { name: 'Indonesia', blurb: 'Dari Istana Negara dan Vespa World Days Bali sampai Danau Kelimutu di Flores.', cover: { id: 'fgSj4RwsrPY', still: 'oardefault' }, banner: { id: 'Syv-jTi1Xlk', still: 'maxres3' } },
+  austria:    { name: 'Austria', blurb: 'The Alp Days: ribuan Vespa berkumpul di kaki Pegunungan Alpen.', cover: { id: 'wwmHdZ1xxgk', still: 'maxres2' }, banner: { id: '6lqCKCfAF3Q', still: 'maxres1' } },
   prancis:    { name: 'Prancis', blurb: 'Sore di bawah Menara Eiffel.', cover: { id: 'DAsu0ZiJhPw', still: 'oardefault' } },
   italia:     { name: 'Italia', blurb: 'Museum Vespa pribadi di bawah tanah kota Milan.', cover: { id: '3evj-xGA4uY', still: 'oardefault' } },
 };
+
+window.HERO = [
+  { slug: 'qasr-al-watan-istana-kepresidenan-abu-dhabi', label: 'Qasr Al Watan' },
+  { slug: 'washington-dc-le-meridien-lincoln-memorial', label: 'Washington DC' },
+  { slug: 'the-alp-days-2019', label: 'The Alp Days 2019' },
+  { slug: 'vespa-world-days-2022-bali', label: 'Vespa World Days 2022' },
+  { slug: 'harvard-university-kampus-impian-dunia', label: 'Harvard', image: { id: 'prNpMcCLFYw', still: 'oar1' } },
+];
 
 window.CATEGORIES = {
   jalan:    { name: 'Jalan-jalan' },
@@ -124,12 +141,12 @@ window.ARTICLES = [
   {
     id: 'FsMv1sCmmRk', slug: 'washington-dc-le-meridien-lincoln-memorial',
     title: 'Menyusuri Washington DC dari Le Méridien ke Lincoln Memorial',
-    date: '2026-09-05', duration: 592, country: 'amerika', city: 'Washington DC', category: 'jalan', still: 'maxres1',
+    date: '2026-09-05', duration: 592, country: 'amerika', city: 'Washington DC', category: 'jalan', still: 'maxres2',
     excerpt: 'Berjalan kaki dari hotel Le Méridien menyusuri pusat kota hingga Lincoln Memorial.',
     body: [],
   },
   {
-    id: '6wctwf3QuKw', slug: 'qasr-al-watan-istana-kepresidenan-abu-dhabi', featured: true,
+    id: '6wctwf3QuKw', slug: 'qasr-al-watan-istana-kepresidenan-abu-dhabi',
     title: 'Qasr Al Watan: Megahnya Istana Kepresidenan Abu Dhabi',
     date: '2026-09-03', duration: 497, country: 'uea', city: 'Abu Dhabi', category: 'budaya', still: 'maxres1',
     excerpt: 'Menjelajahi ruang-ruang megah istana kepresidenan Abu Dhabi dan koleksi hadiah diplomatik dari berbagai negara.',
@@ -333,6 +350,30 @@ window.ARTICLES = [
       'Akhirnya kesampaian juga merasakan langsung serunya Miami Open di Hard Rock Stadium, Miami!',
       'Ini adalah pengalaman pertama saya menonton pertandingan tenis secara langsung di salah satu venue olahraga terbesar di Miami. Bukan cuma pertandingannya yang seru, tapi atmosfer stadionnya benar-benar luar biasa. Dari suasana penonton, kemegahan stadion, sampai energi yang terasa sepanjang pertandingan, semuanya memberikan pengalaman yang berbeda dibanding menonton dari layar.',
       'Di video ini saya mengajak kalian melihat suasana Hard Rock Stadium dari dalam, mulai dari perjalanan masuk, kondisi stadion, area penonton, hingga atmosfer saat pertandingan berlangsung.',
+    ],
+  },
+  {
+    id: 'Syv-jTi1Xlk', slug: 'vespa-world-days-2022-bali',
+    title: 'Vespa World Days 2022 Bali: Dari Mimpi, Akhirnya Terwujud demi Indonesia',
+    date: '2025-07-05', duration: 249, country: 'indonesia', city: 'Bali', category: 'otomotif', still: 'maxres3',
+    excerpt: 'Di balik terselenggaranya Vespa World Days Bali, event Vespa internasional pertama di Asia.',
+    body: [
+      'Bahagia bisa menjadi bagian dari perjalanan besar di balik terselenggaranya Vespa World Days (VWD) Bali, event Vespa internasional pertama di Asia.',
+      'Dengan waktu persiapan yang sangat singkat, kami berusaha mewujudkan sesuatu yang belum pernah ada sebelumnya: menghadirkan ribuan pecinta Vespa dari seluruh dunia ke Pulau Dewata. Acara yang seharusnya digelar tahun 2020 akhirnya mundur ke 2022 karena Covid-19.',
+      'Event ini bukan tanpa kekurangan. Namun dengan segala keterbatasan, tim dan komunitas kami berjuang sekuat tenaga untuk menghadirkan pengalaman tak terlupakan bagi semua peserta.',
+      { quote: 'Ini bukan hanya soal Vespa, tapi tentang semangat, persaudaraan, dan mimpi yang menjadi nyata.' },
+      'Terima kasih untuk semua yang hadir, mendukung, dan percaya bahwa Bali layak menjadi tuan rumah sejarah ini.',
+    ],
+  },
+  {
+    id: '6lqCKCfAF3Q', slug: 'the-alp-days-2019', playlist: 'PLKdbeN7DZ0hbK_2BHrwyJoMHkS_vbMC31',
+    title: 'The Alp Days 2019: Sensasi Naik Vespa di Pegunungan Alpen',
+    date: '2025-06-30', duration: 700, country: 'austria', city: 'Grossglockner', category: 'otomotif', still: 'maxres1',
+    excerpt: 'Berkendara Vespa di jalur pegunungan Grossglockner, gunung tertinggi di Austria, dalam The Alp Days ke-10.',
+    body: [
+      'The Alp Days ke-10 pada tahun 2019 membawa kami berkendara Vespa di Grossglockner, gunung tertinggi di Austria.',
+      'The Alp Days adalah perayaan tahunan Vespa terbesar di Eropa yang diadakan di Zell am See, Austria, sejak tahun 2010. Acara ini menarik lebih dari 5.000 penggemar Vespa dari berbagai negara untuk berkumpul dan menikmati keindahan pegunungan Alpen sambil berkendara dengan skuter klasik mereka.',
+      'Video ini adalah pembuka playlist The Alp Days 2019 di channel kami. Ada sepuluh video yang mendokumentasikan perjalanan ini, dari unboxing goodie bag, aksi freestyle Vespa, perjalanan ke Bendungan Kaprun, sampai bendera Indonesia berkibar di acara penyambutan.',
     ],
   },
 ];
