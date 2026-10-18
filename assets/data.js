@@ -51,6 +51,7 @@ window.SITE = {
 /* Negara: cover = foto tegak untuk kartu destinasi,
    banner = foto mendatar untuk bagian atas halaman negara (opsional). */
 window.COUNTRIES = {
+  mesir:      { name: 'Mesir', blurb: 'Piramida Giza, mumi firaun, dan napak tilas sejarah Islam di Kairo.', cover: { image: 'assets/img/piramida-giza.jpg' }, banner: { id: 'oBNSym5Wccw', still: 'maxres3' } },
   amerika:    { name: 'Amerika Serikat', blurb: 'Dari Times Square dan Harvard sampai Hollywood dan Miami Open.', cover: { id: 'KwF7X0uuEZ4', still: 'oardefault' }, banner: { id: 'E3rCxGVV3WE', still: 'maxres1' } },
   inggris:    { name: 'Inggris', blurb: 'London, Brighton, dan budaya Mods yang masih hidup.', cover: { id: 'IJjygDXQLb8', still: 'oardefault' }, banner: { id: 'doUrZbBnED8', still: 'maxres1' } },
   irlandia:   { name: 'Irlandia', blurb: 'Temple Bar, Guinness, Jameson, dan Titanic Belfast.', cover: { id: 'rWg4186j2TY', still: 'oardefault' }, banner: { id: 'mlHUCAMkUfI', still: 'maxres2' } },
@@ -63,10 +64,12 @@ window.COUNTRIES = {
 };
 
 window.HERO = [
+  { slug: 'piramida-dan-sphinx-giza-mesir', label: 'Piramida Giza' },
+  { slug: 'mumi-firaun-museum-peradaban-mesir', label: 'Museum Mesir' },
   { slug: 'qasr-al-watan-istana-kepresidenan-abu-dhabi', label: 'Qasr Al Watan' },
   { slug: 'washington-dc-le-meridien-lincoln-memorial', label: 'Washington DC' },
   { slug: 'the-alp-days-2019', label: 'The Alp Days 2019' },
-  { slug: 'vespa-world-days-2022-bali', label: 'Vespa World Days 2022' },
+  { slug: 'vespa-world-days-2022-bali', label: 'Vespa World Days' },
   { slug: 'harvard-university-kampus-impian-dunia', label: 'Harvard', image: { id: 'prNpMcCLFYw', still: 'oar1' } },
 ];
 
@@ -375,6 +378,66 @@ window.ARTICLES = [
       'The Alp Days adalah perayaan tahunan Vespa terbesar di Eropa yang diadakan di Zell am See, Austria, sejak tahun 2010. Acara ini menarik lebih dari 5.000 penggemar Vespa dari berbagai negara untuk berkumpul dan menikmati keindahan pegunungan Alpen sambil berkendara dengan skuter klasik mereka.',
       'Video ini adalah pembuka playlist The Alp Days 2019 di channel kami. Ada sepuluh video yang mendokumentasikan perjalanan ini, dari unboxing goodie bag, aksi freestyle Vespa, perjalanan ke Bendungan Kaprun, sampai bendera Indonesia berkibar di acara penyambutan.',
     ],
+  },
+  {
+    id: 'WFEzy_B2m60', slug: 'piramida-dan-sphinx-giza-mesir',
+    title: 'Melihat Langsung Piramida dan Sphinx di Giza, Keajaiban Dunia yang Legendaris',
+    date: '2026-10-17', duration: 751, country: 'mesir', city: 'Giza', category: 'jalan', still: 'maxres2',
+    image: 'assets/img/piramida-giza.jpg', // frame foto dari menit 6:07 pada video
+    excerpt: 'Akhirnya sampai di Piramida Giza, salah satu tempat paling legendaris di dunia, dan melihat kemegahannya dari dekat.',
+    body: [
+      'Akhirnya sampai juga di salah satu tempat paling legendaris di dunia: Piramida Giza, Mesir!',
+      'Selama ini kita mungkin hanya melihat Piramida Mesir lewat buku sejarah, televisi, atau foto di internet. Kali ini, saya berkesempatan datang langsung dan menyaksikan kemegahan bangunan bersejarah yang telah berdiri selama ribuan tahun.',
+      'Piramida Giza adalah salah satu peninggalan peradaban Mesir Kuno yang paling terkenal. Berdiri megah di tengah hamparan gurun, bangunan raksasa ini menyimpan banyak cerita tentang sejarah, kebudayaan, dan kemampuan manusia pada masa lampau.',
+      'Dalam video ini kita melihat suasana kawasan Piramida Giza dari dekat, menikmati pemandangan piramida yang ikonik, dan merasakan pengalaman berada langsung di salah satu destinasi wisata paling terkenal di dunia. Rasanya tentu berbeda dibandingkan hanya melihatnya melalui layar.',
+    ],
+  },
+  {
+    id: 'oBNSym5Wccw', slug: 'mumi-firaun-museum-peradaban-mesir',
+    title: 'Melihat Mumi Firaun Asli di Museum Peradaban Mesir, Kairo',
+    date: '2026-10-17', duration: 804, country: 'mesir', city: 'Kairo', category: 'budaya', still: 'maxres3',
+    excerpt: 'Menyaksikan mumi para raja dan ratu Mesir Kuno di National Museum of Egyptian Civilization (NMEC).',
+    body: [
+      "Di Museum of Egyptian Civilization (NMEC), Kairo, tersimpan 22 mumi kerajaan: 18 raja atau firaun dan 4 ratu. Mumi-mumi ini dipindahkan ke sana melalui prosesi megah bernama The Pharaohs' Golden Parade.",
+      'Di antaranya adalah mumi Ramses II, Seti I, Thutmose III, dan Ratu Hatshepsut.',
+      { h: 'Catatan sejarah' },
+      { list: [
+        'Tidak semua artefak firaun dipindahkan ke NMEC. Egyptian Museum di Tahrir tetap menjadi museum bersejarah dengan koleksi Mesir Kuno.',
+        '1902 adalah tahun pembukaan museum lama, sedangkan 2021 adalah tahun pemindahan mumi kerajaan ke NMEC.',
+      ] },
+    ],
+  },
+  {
+    id: 'Y88PpJhBUKY', slug: 'siwa-essence-oils-giza',
+    title: 'Parfum Khas Mesir: Mampir ke Siwa Essence Oils, Giza',
+    date: '2026-10-17', duration: 236, country: 'mesir', city: 'Giza', category: 'jalan', still: 'maxres2',
+    excerpt: 'Mampir ke toko minyak wangi Siwa Essence Oils di Giza untuk mengenal parfum khas Mesir.',
+    body: [],
+  },
+  {
+    id: 'mvm9OcmOdrY', slug: 'city-tour-kairo-sungai-nil',
+    title: 'City Tour Kairo: Menyusuri Sungai Nil dan Kota Bersejarah Mesir',
+    date: '2026-10-16', duration: 324, country: 'mesir', city: 'Kairo', category: 'jalan', still: 'maxres2',
+    excerpt: 'Berkeliling Kairo, menyusuri Sungai Nil dan kawasan kota bersejarah Mesir.',
+    body: [],
+  },
+  {
+    id: 'geJAUz7t-bw', slug: 'makam-imam-syafii-masjid-amr-bin-ash-kairo',
+    title: "Berkunjung ke Makam Imam Syafi'i dan Masjid Tertua Amr bin Ash di Kairo",
+    date: '2026-10-16', duration: 377, country: 'mesir', city: 'Kairo', category: 'budaya', still: 'maxres2',
+    excerpt: "Napak tilas sejarah Islam di Kairo: makam Imam Syafi'i dan masjid pertama di benua Afrika.",
+    body: [
+      "Perjalanan di Kairo kali ini terasa sangat spesial dan penuh emosi. Kita berkunjung ke Makam Imam Syafi'i dan Masjid Amr bin Ash untuk napak tilas sejarah Islam yang sangat lekat dengan masyarakat Indonesia.",
+      "Destinasi pertama adalah kompleks pemakaman Imam Syafi'i, ulama besar pendiri mazhab fikih yang mayoritas kita ikuti di tanah air. Di sini kita melihat langsung kubah kayu bersejarah yang menaungi tempat peristirahatan terakhir sang Imam.",
+      "Perjalanan berlanjut ke kawasan Fustat (Kairo Lama) untuk mengunjungi Masjid Amr bin Ash, masjid pertama yang dibangun di seluruh benua Afrika oleh sahabat Rasulullah SAW pada tahun 641–642 Masehi. Masjid ini sudah berdiri kokoh lebih dari 1.400 tahun, dan menjadi tempat Imam Syafi'i mengajar ratusan tahun lalu.",
+    ],
+  },
+  {
+    id: 'VJigbh8L6R0', slug: 'indonesia-ke-mesir-rute-bandara-kairo',
+    title: 'Indonesia ke Mesir: Rute ke Bandara Kairo dan Menyusuri Sejarah Kota',
+    date: '2026-10-15', duration: 279, country: 'mesir', city: 'Kairo', category: 'jalan', still: 'maxres2',
+    excerpt: 'Awal perjalanan ke Mesir: rute dari Indonesia menuju bandara Kairo.',
+    body: [],
   },
 ];
 

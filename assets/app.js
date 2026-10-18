@@ -26,6 +26,8 @@
   const isShort = (item) => SHORTS.includes(item);
   const imageOf = (item) => item.image || yt(item.id, item.still || (isShort(item) ? 'oardefault' : 'maxres1'));
   const fallbackOf = (item) => yt(item.id, 'hqdefault');
+  const picSrc = (p) => p.image || yt(p.id, p.still);
+  const picFb = (p) => p.image || yt(p.id, 'hqdefault');
 
   const fmtDate = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
   const fmtClock = (s) => {
@@ -134,7 +136,7 @@
     header.className = 'site-header' + (overlay ? ' is-overlay' : '');
     const megaItems = Object.entries(COUNTRIES).map(([k, c]) => `
       <a class="mega-item" href="${archiveUrl({ d: k })}">
-        ${img(yt(c.cover.id, c.cover.still), yt(c.cover.id, 'hqdefault'))}
+        ${img(picSrc(c.cover), picFb(c.cover))}
         <span><strong>${esc(c.name)}</strong><span>${countFor(k)} video</span></span>
       </a>`).join('');
 
@@ -242,7 +244,7 @@
     const d = document.createElement('dialog');
     d.className = 'drawer';
     d.setAttribute('aria-label', 'Menu');
-    const dest = Object.entries(COUNTRIES).map(([k, c]) => `<a href="${archiveUrl({ d: k })}">${img(yt(c.cover.id, c.cover.still), yt(c.cover.id, 'hqdefault'))}${esc(c.name)}</a>`).join('');
+    const dest = Object.entries(COUNTRIES).map(([k, c]) => `<a href="${archiveUrl({ d: k })}">${img(picSrc(c.cover), picFb(c.cover))}${esc(c.name)}</a>`).join('');
     d.innerHTML = `
       <div class="drawer-head">
         <a class="wordmark" href="index.html"><span class="wordmark-name">${esc(SITE.name)}</span></a>
@@ -525,6 +527,7 @@
 
   function pageHome(main) {
     const slides = heroSlides();
+    const featureCount = { 1: 1, 2: 2 }[Object.keys(COUNTRIES).length % 4] || 0;
     const heroArticles = slides.map((s) => s.a);
     const latest = ARTICLES.filter((a) => !heroArticles.includes(a)).slice(0, 5);
     const theme = ARTICLES.filter((a) => a.category === 'otomotif').slice(0, 4);
@@ -555,10 +558,10 @@
             <div><span class="kicker kicker-dot">Destinasi</span><h2 class="section-title">Jelajahi dunia, satu negara sekaligus</h2></div>
             <p class="lede">Pilih negara untuk membaca semua cerita dan menonton videonya.</p>
           </div>
-          <div class="dest-grid${(Object.keys(COUNTRIES).length + 3) % 4 === 0 ? ' has-feature' : ''}">
-            ${Object.entries(COUNTRIES).map(([k, c]) => `
-              <a class="dest reveal" href="${archiveUrl({ d: k })}">
-                ${img(yt(c.cover.id, c.cover.still), yt(c.cover.id, 'hqdefault'))}
+          <div class="dest-grid${featureCount ? ' has-feature' : ''}">
+            ${Object.entries(COUNTRIES).map(([k, c], i) => `
+              <a class="dest reveal${i < featureCount ? ' is-feature' : ''}" href="${archiveUrl({ d: k })}">
+                ${img(picSrc(c.cover), picFb(c.cover))}
                 <span class="dest-arrow">${I.arrowUR}</span>
                 <span class="dest-body">
                   <span class="dest-count">${countFor(k)} video</span>
@@ -683,7 +686,7 @@
     const c = COUNTRIES[state.d];
     let head;
     if (c) {
-      const pic = (p, cls) => `<figure class="${cls}${isStill(p.still) ? ' is-still' : ''}">${img(yt(p.id, p.still), yt(p.id, 'hqdefault'), { eager: true })}</figure>`;
+      const pic = (p, cls) => `<figure class="${cls}${!p.image && isStill(p.still) ? ' is-still' : ''}">${img(picSrc(p), picFb(p), { eager: true })}</figure>`;
       const nA = ARTICLES.filter((i) => i.country === state.d).length;
       const nS = SHORTS.filter((i) => i.country === state.d).length;
       const cityList = [...new Set([...ARTICLES, ...SHORTS].filter((i) => i.country === state.d && i.city).map((i) => i.city))];
@@ -807,7 +810,7 @@
 
     render();
     const title = c ? `${c.name} · Cerita Perjalanan` : 'Semua Cerita';
-    setMeta(`${title} · ${SITE.name}`, c ? c.blurb : `${ARTICLES.length} cerita perjalanan dari ${Object.keys(COUNTRIES).length} negara.`, c ? yt(c.cover.id, c.cover.still) : imageOf(ARTICLES[0]));
+    setMeta(`${title} · ${SITE.name}`, c ? c.blurb : `${ARTICLES.length} cerita perjalanan dari ${Object.keys(COUNTRIES).length} negara.`, c ? picSrc(c.cover) : imageOf(ARTICLES[0]));
   }
 
   /* =====================================================================
