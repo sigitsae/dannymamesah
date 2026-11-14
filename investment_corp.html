@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Kas Besar · Dannys Investment Corp</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230B2545'/%3E%3Cpath d='M18 14h14a18 18 0 0 1 0 36H18z' fill='none' stroke='%23D4AF5A' stroke-width='4' stroke-linejoin='round'/%3E%3Crect x='24' y='37' width='4' height='7' rx='1' fill='%23D4AF5A'/%3E%3Crect x='30' y='31' width='4' height='13' rx='1' fill='%23D4AF5A'/%3E%3Crect x='36' y='25' width='4' height='19' rx='1' fill='%23D4AF5A'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="assets/img/dic-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -50,6 +50,7 @@
   }
   .brand-row{display:flex;align-items:center;gap:10px}
   .logo-mark{width:40px;height:40px;flex:none}
+  .brand-logo{height:40px;width:auto;display:block;flex:none}
   .wordmark{display:flex;flex-direction:column;line-height:1}
   .wordmark b{font-weight:800;letter-spacing:.16em;font-size:15px}
   .wordmark span{font-size:9.5px;letter-spacing:.28em;color:var(--gold);font-weight:700;margin-top:4px}
@@ -195,6 +196,7 @@
   /* ---------- Account / Logo ---------- */
   .logo-show{padding:26px 18px 20px;text-align:center;background:linear-gradient(160deg,var(--navy),var(--navy-3));color:#fff;border-radius:22px;margin-top:16px;position:relative;overflow:hidden}
   .logo-show::before{content:"";position:absolute;inset:auto -60px -90px auto;width:220px;height:220px;border-radius:50%;border:30px solid rgba(212,175,90,.1)}
+  .logo-show .big-logo{width:100%;max-width:330px;height:auto;margin:0 auto;display:block;position:relative;filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
   .logo-show .big{width:84px;height:84px;margin:0 auto 14px;display:block;filter:drop-shadow(0 10px 20px rgba(0,0,0,.25))}
   .logo-show .wm b{font-size:22px;letter-spacing:.2em;font-weight:800;display:block}
   .logo-show .wm span{font-size:10.5px;letter-spacing:.42em;color:var(--gold);font-weight:700;display:block;margin-top:6px}
@@ -315,8 +317,7 @@
 <div class="app">
   <header class="header">
     <div class="brand-row">
-      <svg class="logo-mark"><use href="#logo"/></svg>
-      <div class="wordmark"><b>DANNYS</b><span>INVESTMENT CORP</span></div>
+      <img class="brand-logo" src="assets/img/dic-logo.png" alt="Danny's Investment Corp">
       <div class="spacer"></div>
       <button class="icon-btn" aria-label="Notifikasi" onclick="toast('Belum ada notifikasi baru')">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
@@ -425,9 +426,8 @@
   <!-- ============ AKUN ============ -->
   <section class="view" id="view-account">
     <div class="logo-show">
-      <svg class="big"><use href="#logo"/></svg>
-      <div class="wm"><b>DANNYS</b><span>INVESTMENT CORP</span></div>
-      <div class="tagline">Logo sementara — "D" sebagai induk, tiga batang sebagai tiga unit usaha (2 PT + 1 jasa) yang tumbuh</div>
+      <img class="big-logo" src="assets/img/dic-logo.png" alt="Danny's Investment Corp">
+      <div class="tagline">Logo utama · pohon yang tumbuh dari modal, induk dari tiga unit usaha (2 PT + 1 jasa)</div>
     </div>
     <div class="variants" id="unit-logos"></div>
 
@@ -563,7 +563,7 @@
 <script>
 /* ================= DATA ================= */
 const COMPANIES = [
-  { id:'induk', code:'DIC', name:'Dannys Investment Corp',   short:'Induk',     role:'Induk Perusahaan',          biz:'Holding · pengelola investasi grup', color:'#0B2545', open:500000000 },
+  { id:'induk', code:'DIC', name:'Dannys Investment Corp',   short:'Induk',     icon:'assets/img/dic-icon.png', logo:'assets/img/dic-logo.png', role:'Induk Perusahaan',          biz:'Holding · pengelola investasi grup', color:'#0B2545', open:500000000 },
   { id:'a',     code:'KGS', name:'PT Kreatif Global Studio', short:'Kreatif',   role:'PT · Anak Perusahaan 1',     biz:'Studio kreatif, desain & produksi video', icon:'assets/img/kgs-icon.png', logo:'assets/img/kgs-logo.png', color:'#D99A1E', open:120000000 },
   { id:'b',     code:'KKS', name:'PT Koleksi Kandang Sultan', short:'Kandang', role:'PT · Anak Perusahaan 2',     biz:'Koleksi & perawatan hewan premium',   icon:'assets/img/kks-icon.png', logo:'assets/img/kks-logo.png', color:'#5B2A86', open: 85000000 },
   { id:'c',     code:'JKP', name:'Jasa Konsultan Pribadi',   short:'Konsultan', role:'Jasa · Usaha Perorangan',    biz:'Konsultasi bisnis & pendampingan pribadi', icon:'assets/img/jkp-icon.png', logo:'assets/img/jkp-logo.png', color:'#1F5FA8', open: 40000000 },
@@ -813,7 +813,7 @@ function renderOrg(){
       ${i>0?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C5CDD9" stroke-width="2" style="margin-left:-6px"><path d="M4 2v12h16"/></svg>':''}
       ${badge(c)}
       <div class="mid"><div class="nm">${c.name}</div><div class="meta">${c.role} · ${c.biz}</div></div></div>`).join('');
-  const units = COMPANIES.filter(c => c.logo);
+  const units = COMPANIES.filter(c => c.logo && c.id !== 'induk');
   document.getElementById('unit-logos').innerHTML = units.map(c =>
     `<div class="unit" title="${esc(c.name)}"><img src="${c.logo}" alt="Logo ${esc(c.name)}"></div>`).join('')
     + `<p>Logo unit usaha: ${units.map(c => c.name).join(', ')}.</p>`;
