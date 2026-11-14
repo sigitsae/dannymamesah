@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B2545">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Kas Besar · Dannys Investment Corp</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230B2545'/%3E%3Cpath d='M18 14h14a18 18 0 0 1 0 36H18z' fill='none' stroke='%23D4AF5A' stroke-width='4' stroke-linejoin='round'/%3E%3Crect x='24' y='37' width='4' height='7' rx='1' fill='%23D4AF5A'/%3E%3Crect x='30' y='31' width='4' height='13' rx='1' fill='%23D4AF5A'/%3E%3Crect x='36' y='25' width='4' height='19' rx='1' fill='%23D4AF5A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B2545; --navy-2:#13315C; --navy-3:#1E4378;
+    --gold:#D4AF5A; --gold-2:#B8913A; --gold-soft:#F6EFDD;
+    --bg:#F3F5F9; --card:#FFFFFF; --ink:#0F1B2D; --ink-2:#4A5668; --ink-3:#8792A2;
+    --line:#E4E8EF;
+    --in:#12946B; --in-soft:#E3F5EE;
+    --out:#D2483D; --out-soft:#FCEAE8;
+    --radius:18px;
+    --shadow:0 1px 2px rgba(15,27,45,.05), 0 6px 20px rgba(15,27,45,.06);
+    --safe-b:env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#DCE2EC; color:var(--ink); font-size:15px; line-height:1.4;
+    -webkit-font-smoothing:antialiased;
+  }
+  button,input,select,textarea{font:inherit;color:inherit}
+  button{cursor:pointer;border:0;background:none;padding:0}
+
+  /* phone frame on desktop, full-bleed on mobile */
+  .app{
+    max-width:440px; min-height:100vh; margin:0 auto; background:var(--bg);
+    position:relative; overflow-x:hidden; padding-bottom:calc(92px + var(--safe-b));
+  }
+  @media (min-width:600px){
+    body{padding:24px 0}
+    .app{min-height:calc(100vh - 48px); border-radius:32px; box-shadow:0 30px 80px rgba(11,37,69,.25); overflow:hidden}
+  }
+
+  /* ---------- Header ---------- */
+  .header{
+    background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 70%,var(--navy-3) 100%);
+    color:#fff; padding:calc(14px + env(safe-area-inset-top,0px)) 16px 0; position:sticky; top:0; z-index:20;
+  }
+  .brand-row{display:flex;align-items:center;gap:10px}
+  .logo-mark{width:40px;height:40px;flex:none}
+  .wordmark{display:flex;flex-direction:column;line-height:1}
+  .wordmark b{font-weight:800;letter-spacing:.16em;font-size:15px}
+  .wordmark span{font-size:9.5px;letter-spacing:.28em;color:var(--gold);font-weight:700;margin-top:4px}
+  .brand-row .spacer{flex:1}
+  .icon-btn{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.08);color:#fff;position:relative}
+  .icon-btn .dot{position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--gold);border:2px solid var(--navy-2)}
+  .scope{display:flex;gap:8px;overflow-x:auto;padding:14px 0 14px;scrollbar-width:none}
+  .scope::-webkit-scrollbar{display:none}
+  .chip{
+    flex:none;padding:8px 13px;border-radius:999px;font-size:12.5px;font-weight:600;
+    background:rgba(255,255,255,.08);color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.1);
+    display:flex;align-items:center;gap:6px;white-space:nowrap;
+  }
+  .chip i{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .chip.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+
+  /* ---------- Layout ---------- */
+  .view{display:none;padding:0 16px}
+  .view.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 10px}
+  .section-title h3{margin:0;font-size:15px;font-weight:700}
+  .section-title a,.link{color:var(--navy-3);font-size:13px;font-weight:600;text-decoration:none}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+  /* ---------- Balance ---------- */
+  .hero-bg{background:linear-gradient(180deg,var(--navy-3) 0,var(--navy-3) 0) ;margin:0 -16px;padding:0 16px;
+    background:linear-gradient(180deg,#1E4378 0 70px,transparent 70px)}
+  .balance{
+    position:relative;overflow:hidden;border-radius:22px;padding:18px 18px 16px;color:#fff;
+    background:radial-gradient(120% 140% at 100% 0%,#2B5A97 0%,#13315C 45%,#0B2545 100%);
+    box-shadow:0 14px 30px rgba(11,37,69,.28);
+  }
+  .balance::after{content:"";position:absolute;right:-40px;top:-40px;width:170px;height:170px;border-radius:50%;
+    border:26px solid rgba(212,175,90,.12)}
+  .balance .lbl{font-size:12px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:6px}
+  .balance .lbl .tag{background:rgba(212,175,90,.18);color:var(--gold);padding:2px 8px;border-radius:999px;font-weight:700;font-size:10.5px;letter-spacing:.04em}
+  .balance .amt{font-size:28px;font-weight:800;letter-spacing:-.01em;margin:6px 0 2px;display:flex;align-items:center;gap:10px}
+  .balance .amt button{color:rgba(255,255,255,.6)}
+  .balance .sub{font-size:12px;color:rgba(255,255,255,.6)}
+  .flow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;position:relative;z-index:1}
+  .flow div{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px}
+  .flow small{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.65)}
+  .flow b{display:block;font-size:14.5px;margin-top:3px}
+  .flow .up{color:#6FE0B6} .flow .down{color:#FF9C92}
+
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .act{display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:16px;background:var(--card);box-shadow:var(--shadow);text-align:left}
+  .act .ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none}
+  .act.in .ic{background:var(--in-soft);color:var(--in)}
+  .act.out .ic{background:var(--out-soft);color:var(--out)}
+  .act b{display:block;font-size:14px}
+  .act small{color:var(--ink-3);font-size:11.5px}
+  .act:active{transform:scale(.98)}
+
+  /* subsidiaries */
+  .subs{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:2px 16px 6px;scrollbar-width:none}
+  .subs::-webkit-scrollbar{display:none}
+  .sub-card{flex:none;width:158px;padding:14px;text-align:left}
+  .sub-card .top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .badge{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.03em;flex:none}
+  .sub-card .nm{font-size:12px;font-weight:600;color:var(--ink-2);line-height:1.2}
+  .sub-card .v{font-size:15px;font-weight:800}
+  .sub-card .d{font-size:11px;margin-top:2px}
+  .pos{color:var(--in)} .neg{color:var(--out)}
+
+  /* ---------- Transactions ---------- */
+  .tx-list{padding:4px 0}
+  .tx{display:flex;align-items:center;gap:12px;padding:12px 14px;width:100%;text-align:left}
+  .tx + .tx{border-top:1px solid var(--line)}
+  .tx .ic{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;flex:none}
+  .tx.in .ic{background:var(--in-soft);color:var(--in)}
+  .tx.out .ic{background:var(--out-soft);color:var(--out)}
+  .tx .mid{flex:1;min-width:0}
+  .tx .t{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tx .s{font-size:12px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .tx .s .co{font-weight:700;color:var(--ink-2)}
+  .tx .r{text-align:right;flex:none}
+  .tx .r b{font-size:14px;display:block}
+  .tx.in .r b{color:var(--in)} .tx.out .r b{color:var(--ink)}
+  .tx .r small{font-size:11px;color:var(--ink-3)}
+  .day-head{display:flex;justify-content:space-between;align-items:baseline;margin:18px 4px 8px;font-size:12.5px}
+  .day-head b{font-weight:700;color:var(--ink-2)}
+  .day-head span{color:var(--ink-3);font-weight:600}
+  .empty{padding:36px 20px;text-align:center;color:var(--ink-3);font-size:13px}
+
+  .toolbar{display:flex;gap:8px;margin-top:16px}
+  .search{flex:1;display:flex;align-items:center;gap:8px;background:var(--card);border-radius:14px;padding:0 12px;box-shadow:var(--shadow);height:44px;color:var(--ink-3)}
+  .search input{border:0;outline:0;background:none;flex:1;min-width:0;color:var(--ink)}
+  .seg{display:grid;grid-template-columns:repeat(3,1fr);background:#E6EAF1;border-radius:13px;padding:4px;margin-top:12px}
+  .seg button{padding:8px 0;border-radius:10px;font-size:13px;font-weight:600;color:var(--ink-2)}
+  .seg button.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(15,27,45,.1)}
+  .sum-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+  .sum-strip div{background:var(--card);border-radius:14px;padding:10px;box-shadow:var(--shadow)}
+  .sum-strip small{font-size:10.5px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  .sum-strip b{display:block;font-size:13px;margin-top:3px}
+
+  /* ---------- Report ---------- */
+  .period{display:flex;align-items:center;justify-content:space-between;margin-top:16px;background:var(--card);border-radius:14px;padding:6px;box-shadow:var(--shadow)}
+  .period button{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--ink-2)}
+  .period button:disabled{opacity:.3}
+  .period b{font-size:14px}
+  .stmt{padding:6px 16px;margin-top:12px}
+  .stmt .row{display:flex;justify-content:space-between;padding:11px 0;font-size:14px}
+  .stmt .row + .row{border-top:1px dashed var(--line)}
+  .stmt .row span{color:var(--ink-2)}
+  .stmt .row.total{border-top:1.5px solid var(--ink)!important;font-weight:800}
+  .stmt .row.total span{color:var(--ink)}
+  .chart{padding:16px}
+  .chart .legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2);margin-bottom:12px}
+  .chart .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .bars{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;height:150px;align-items:end;border-bottom:1px solid var(--line)}
+  .bar-grp{display:flex;gap:3px;align-items:end;justify-content:center;height:100%}
+  .bar-grp span{width:11px;border-radius:5px 5px 2px 2px;min-height:3px;transition:height .4s ease}
+  .bar-grp .bi{background:var(--in)} .bar-grp .bo{background:var(--out)}
+  .bar-grp.cur span{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--gold)}
+  .bar-lbl{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:6px;text-align:center;font-size:11px;color:var(--ink-3);font-weight:600}
+  .co-row{display:flex;align-items:center;gap:12px;padding:12px 14px}
+  .co-row + .co-row{border-top:1px solid var(--line)}
+  .co-row .mid{flex:1;min-width:0}
+  .co-row .nm{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .co-row .meta{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+  .co-row .r{text-align:right}
+  .co-row .r b{font-size:14px}
+  .cat-row{padding:10px 16px}
+  .cat-row .top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+  .cat-row .top span{color:var(--ink-2)}
+  .track{height:7px;border-radius:99px;background:#EDF0F5;overflow:hidden}
+  .track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--out),#E9776C)}
+  .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .btn{height:48px;border-radius:14px;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn.primary{background:var(--navy);color:#fff}
+  .btn.ghost{background:var(--card);color:var(--navy);box-shadow:var(--shadow)}
+  .btn.gold{background:var(--gold);color:var(--navy)}
+  .btn.danger{background:var(--out-soft);color:var(--out)}
+  .btn.block{width:100%}
+
+  /* ---------- Account / Logo ---------- */
+  .logo-show{padding:26px 18px 20px;text-align:center;background:linear-gradient(160deg,var(--navy),var(--navy-3));color:#fff;border-radius:22px;margin-top:16px;position:relative;overflow:hidden}
+  .logo-show::before{content:"";position:absolute;inset:auto -60px -90px auto;width:220px;height:220px;border-radius:50%;border:30px solid rgba(212,175,90,.1)}
+  .logo-show .big{width:84px;height:84px;margin:0 auto 14px;display:block;filter:drop-shadow(0 10px 20px rgba(0,0,0,.25))}
+  .logo-show .wm b{font-size:22px;letter-spacing:.2em;font-weight:800;display:block}
+  .logo-show .wm span{font-size:10.5px;letter-spacing:.42em;color:var(--gold);font-weight:700;display:block;margin-top:6px}
+  .logo-show .tagline{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:12px;font-style:italic}
+  .variants{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  .variants div{border-radius:16px;height:86px;display:grid;place-items:center;box-shadow:var(--shadow)}
+  .variants svg{width:46px;height:46px}
+  .variants p{grid-column:1/-1;margin:2px 4px 0;font-size:11.5px;color:var(--ink-3)}
+  .menu .item{display:flex;align-items:center;gap:12px;padding:14px;width:100%;text-align:left}
+  .menu .item + .item{border-top:1px solid var(--line)}
+  .menu .item .ic{width:36px;height:36px;border-radius:11px;background:#EEF2F8;color:var(--navy-3);display:grid;place-items:center;flex:none}
+  .menu .item .mid{flex:1}
+  .menu .item b{font-size:14px;font-weight:600;display:block}
+  .menu .item small{font-size:12px;color:var(--ink-3)}
+  .profile{display:flex;align-items:center;gap:12px;padding:14px}
+  .avatar{width:46px;height:46px;border-radius:50%;background:var(--gold-soft);color:var(--gold-2);display:grid;place-items:center;font-weight:800}
+  .note{font-size:11.5px;color:var(--ink-3);text-align:center;margin:18px 10px 8px}
+
+  /* ---------- Bottom nav ---------- */
+  .nav{
+    position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;z-index:30;
+    background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);
+    display:grid;grid-template-columns:repeat(5,1fr);align-items:end;padding:6px 6px calc(8px + var(--safe-b));
+  }
+  @media (min-width:600px){.nav{bottom:24px;border-radius:0 0 32px 32px}}
+  .nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--ink-3);padding:6px 0}
+  .nav button.active{color:var(--navy)}
+  .nav button.active svg{stroke:var(--navy)}
+  .nav .fab-wrap{display:flex;justify-content:center}
+  .fab{width:56px;height:56px;border-radius:18px;margin-top:-26px;background:linear-gradient(145deg,var(--gold),var(--gold-2));color:var(--navy)!important;
+    display:grid!important;place-items:center;box-shadow:0 10px 22px rgba(184,145,58,.45),0 0 0 5px var(--bg)}
+
+  /* ---------- Sheet ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(8,20,38,.5);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .sheet{
+    position:fixed;left:50%;bottom:0;width:100%;max-width:440px;z-index:50;background:var(--bg);
+    border-radius:26px 26px 0 0;transform:translate(-50%,105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);
+    max-height:92vh;display:flex;flex-direction:column;
+  }
+  .sheet.show{transform:translate(-50%,0)}
+  .sheet .grab{width:42px;height:5px;border-radius:99px;background:#CBD2DD;margin:10px auto 4px}
+  .sheet .sh-head{display:flex;align-items:center;justify-content:space-between;padding:6px 18px 10px}
+  .sheet .sh-head h3{margin:0;font-size:17px}
+  .sheet .sh-body{overflow-y:auto;padding:0 18px 18px}
+  .sheet .sh-foot{padding:12px 18px calc(14px + var(--safe-b));border-top:1px solid var(--line);background:var(--bg)}
+  .type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#E6EAF1;padding:4px;border-radius:14px}
+  .type-toggle button{padding:11px 0;border-radius:11px;font-weight:700;font-size:14px;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:6px}
+  .type-toggle button.on-in{background:var(--in);color:#fff}
+  .type-toggle button.on-out{background:var(--out);color:#fff}
+  .amount-box{background:var(--card);border-radius:18px;padding:14px 16px;margin-top:12px;box-shadow:var(--shadow)}
+  .amount-box label{font-size:12px;color:var(--ink-3);font-weight:600}
+  .amount-box .in-wrap{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+  .amount-box .in-wrap span{font-size:20px;font-weight:700;color:var(--ink-3)}
+  .amount-box input{border:0;outline:0;background:none;font-size:30px;font-weight:800;width:100%;min-width:0;letter-spacing:-.01em}
+  .quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .quick button{padding:6px 11px;border-radius:999px;background:#EEF2F8;color:var(--navy-3);font-size:12px;font-weight:700}
+  .field{margin-top:12px}
+  .field > label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin:0 2px 6px}
+  .field input,.field select,.field textarea{
+    width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;outline:0;font-size:15px;
+    appearance:none;-webkit-appearance:none;
+  }
+  .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238792A2' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy-3)}
+  .field textarea{resize:none;min-height:70px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .cats{display:flex;flex-wrap:wrap;gap:7px}
+  .cats button{padding:8px 12px;border-radius:12px;background:var(--card);border:1.5px solid var(--line);font-size:12.5px;font-weight:600;color:var(--ink-2)}
+  .cats button.sel{border-color:var(--navy);background:var(--navy);color:#fff}
+  .upload{display:flex;align-items:center;gap:12px;border:1.5px dashed #C5CDD9;border-radius:14px;padding:12px 14px;background:var(--card);color:var(--ink-3);font-size:13px;width:100%;text-align:left}
+  .upload b{color:var(--navy-3)}
+  .err{color:var(--out);font-size:12px;margin:6px 2px 0;display:none}
+  .err.show{display:block}
+  .detail-amt{text-align:center;padding:10px 0 18px}
+  .detail-amt .ic{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;margin:0 auto 10px}
+  .detail-amt b{font-size:26px;font-weight:800;display:block}
+  .detail-amt small{color:var(--ink-3)}
+  .kv{padding:4px 16px}
+  .kv .row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;font-size:13.5px}
+  .kv .row + .row{border-top:1px solid var(--line)}
+  .kv .row span{color:var(--ink-3);flex:none}
+  .kv .row b{font-weight:600;text-align:right}
+
+  .toast{position:fixed;left:50%;bottom:calc(100px + var(--safe-b));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:14px;font-size:13px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:.25s;display:flex;gap:8px;align-items:center;max-width:90%}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  svg{flex:none}
+</style>
+</head>
+<body>
+
+<!-- Reusable logo symbol: "D" = induk perusahaan, 3 bar = 3 anak perusahaan yang tumbuh -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lg-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1E4378"/><stop offset="1" stop-color="#0B2545"/>
+    </linearGradient>
+    <linearGradient id="lg-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EBCB7E"/><stop offset="1" stop-color="#B8913A"/>
+    </linearGradient>
+    <symbol id="logo" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="17" fill="url(#lg-bg)"/>
+      <rect x="1" y="1" width="62" height="62" rx="16" fill="none" stroke="rgba(212,175,90,.35)" stroke-width="1"/>
+      <path d="M18 14h14a18 18 0 0 1 0 36H18z" fill="none" stroke="url(#lg-gold)" stroke-width="4" stroke-linejoin="round"/>
+      <rect x="24" y="37" width="4" height="7" rx="1" fill="url(#lg-gold)"/>
+      <rect x="30" y="31" width="4" height="13" rx="1" fill="url(#lg-gold)"/>
+      <rect x="36" y="25" width="4" height="19" rx="1" fill="url(#lg-gold)"/>
+    </symbol>
+    <symbol id="logo-line" viewBox="0 0 64 64">
+      <path d="M18 14h14a18 18 0 0 1 0 36H18z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+      <rect x="24" y="37" width="4" height="7" rx="1" fill="currentColor"/>
+      <rect x="30" y="31" width="4" height="13" rx="1" fill="currentColor"/>
+      <rect x="36" y="25" width="4" height="19" rx="1" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <header class="header">
+    <div class="brand-row">
+      <svg class="logo-mark"><use href="#logo"/></svg>
+      <div class="wordmark"><b>DANNYS</b><span>INVESTMENT CORP</span></div>
+      <div class="spacer"></div>
+      <button class="icon-btn" aria-label="Notifikasi" onclick="toast('Belum ada notifikasi baru')">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="dot"></span>
+      </button>
+    </div>
+    <nav class="scope" id="scope"></nav>
+  </header>
+
+  <!-- ============ BERANDA ============ -->
+  <section class="view active" id="view-home">
+    <div class="hero-bg" style="padding-top:2px">
+      <div class="balance" style="margin-top:14px">
+        <div class="lbl">Saldo Kas Besar <span class="tag" id="bal-tag">KONSOLIDASI</span></div>
+        <div class="amt"><span id="bal-amt">Rp 0</span>
+          <button onclick="toggleHide()" aria-label="Sembunyikan saldo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="sub" id="bal-sub">Per hari ini</div>
+        <div class="flow">
+          <div><small><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6FE0B6" stroke-width="3" stroke-linecap="round"><path d="M17 7 7 17M7 8v9h9"/></svg>Masuk bulan ini</small><b class="up" id="m-in">Rp 0</b></div>
+          <div><small><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FF9C92" stroke-width="3" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg>Keluar bulan ini</small><b class="down" id="m-out">Rp 0</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="act in" onclick="openForm('in')">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M17 7 7 17M7 8v9h9"/></svg></span>
+        <span><b>Kas Masuk</b><small>Catat penerimaan</small></span>
+      </button>
+      <button class="act out" onclick="openForm('out')">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        <span><b>Kas Keluar</b><small>Catat pengeluaran</small></span>
+      </button>
+    </div>
+
+    <div id="subs-wrap">
+      <div class="section-title"><h3>Grup Perusahaan</h3><a href="#" onclick="go('report');return false">Laporan</a></div>
+      <div class="subs" id="subs"></div>
+    </div>
+
+    <div class="section-title"><h3>Transaksi Terakhir</h3><a href="#" onclick="go('trx');return false">Lihat semua</a></div>
+    <div class="card tx-list" id="recent"></div>
+  </section>
+
+  <!-- ============ TRANSAKSI ============ -->
+  <section class="view" id="view-trx">
+    <div class="toolbar">
+      <label class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Cari keterangan, kategori, no. bukti…" oninput="renderTrx()">
+      </label>
+    </div>
+    <div class="seg" id="seg">
+      <button class="active" data-f="all">Semua</button>
+      <button data-f="in">Masuk</button>
+      <button data-f="out">Keluar</button>
+    </div>
+    <div class="sum-strip">
+      <div><small>Masuk</small><b class="pos" id="t-in">Rp 0</b></div>
+      <div><small>Keluar</small><b class="neg" id="t-out">Rp 0</b></div>
+      <div><small>Selisih</small><b id="t-net">Rp 0</b></div>
+    </div>
+    <div id="trx-groups"></div>
+  </section>
+
+  <!-- ============ LAPORAN ============ -->
+  <section class="view" id="view-report">
+    <div class="period">
+      <button id="p-prev" aria-label="Bulan sebelumnya"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <b id="p-label">—</b>
+      <button id="p-next" aria-label="Bulan berikutnya"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+
+    <div class="section-title"><h3>Laporan Kas Besar</h3><span class="link" id="r-scope"></span></div>
+    <div class="card stmt">
+      <div class="row"><span>Saldo awal</span><b id="r-open">Rp 0</b></div>
+      <div class="row"><span>Total kas masuk</span><b class="pos" id="r-in">Rp 0</b></div>
+      <div class="row"><span>Total kas keluar</span><b class="neg" id="r-out">Rp 0</b></div>
+      <div class="row total"><span>Saldo akhir</span><b id="r-close">Rp 0</b></div>
+    </div>
+
+    <div class="section-title"><h3>Arus Kas 6 Bulan</h3></div>
+    <div class="card chart">
+      <div class="legend"><span><i style="background:var(--in)"></i>Masuk</span><span><i style="background:var(--out)"></i>Keluar</span></div>
+      <div class="bars" id="bars"></div>
+      <div class="bar-lbl" id="bar-lbl"></div>
+    </div>
+
+    <div class="section-title"><h3>Saldo per Perusahaan</h3></div>
+    <div class="card" id="co-list"></div>
+
+    <div class="section-title"><h3>Pengeluaran Terbesar</h3></div>
+    <div class="card" style="padding:6px 0" id="cat-list"></div>
+
+    <div class="btn-row">
+      <button class="btn ghost" onclick="toast('Ekspor Excel — segera hadir')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 13l6 6M15 13l-6 6"/></svg>Excel</button>
+      <button class="btn primary" onclick="toast('Ekspor PDF — segera hadir')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Unduh PDF</button>
+    </div>
+  </section>
+
+  <!-- ============ AKUN ============ -->
+  <section class="view" id="view-account">
+    <div class="logo-show">
+      <svg class="big"><use href="#logo"/></svg>
+      <div class="wm"><b>DANNYS</b><span>INVESTMENT CORP</span></div>
+      <div class="tagline">Logo sementara — "D" sebagai induk, tiga batang sebagai anak perusahaan yang tumbuh</div>
+    </div>
+    <div class="variants">
+      <div style="background:#fff;color:var(--navy)"><svg><use href="#logo-line"/></svg></div>
+      <div style="background:var(--gold);color:var(--navy)"><svg><use href="#logo-line"/></svg></div>
+      <div style="background:var(--navy);color:var(--gold)"><svg><use href="#logo-line"/></svg></div>
+      <p>Varian monokrom: di atas putih, emas, dan navy.</p>
+    </div>
+
+    <div class="section-title"><h3>Pengguna</h3></div>
+    <div class="card profile">
+      <div class="avatar">AK</div>
+      <div style="flex:1"><b style="display:block">Admin Keuangan</b><small style="color:var(--ink-3)">Akses: Induk + 3 anak perusahaan</small></div>
+      <span class="chip" style="background:var(--gold-soft);color:var(--gold-2);border:0">Admin</span>
+    </div>
+
+    <div class="section-title"><h3>Struktur Perusahaan</h3></div>
+    <div class="card" id="org"></div>
+
+    <div class="section-title"><h3>Pengaturan</h3></div>
+    <div class="card menu">
+      <button class="item" onclick="toast('Kelola kategori — segera hadir')">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span>
+        <span class="mid"><b>Kategori Kas</b><small>Atur kategori masuk & keluar</small></span>
+      </button>
+      <button class="item" onclick="toast('Kelola pengguna — segera hadir')">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 3.5a4 4 0 0 1 0 9M22 21a7 7 0 0 0-4-6.3"/></svg></span>
+        <span class="mid"><b>Pengguna & Hak Akses</b><small>Kasir, approver, direksi</small></span>
+      </button>
+      <button class="item" onclick="resetData()">
+        <span class="ic" style="background:var(--out-soft);color:var(--out)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></span>
+        <span class="mid"><b>Reset Data Dummy</b><small>Kembalikan contoh transaksi awal</small></span>
+      </button>
+    </div>
+    <p class="note">Desain dummy · data disimpan di browser perangkat ini saja · v0.1</p>
+  </section>
+
+  <!-- Bottom nav -->
+  <nav class="nav" id="nav">
+    <button data-v="home" class="active">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Beranda</button>
+    <button data-v="trx">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10a2 2 0 0 1 2 2v15l-3-2-2 2-2-2-2 2-2-2-3 2V6a2 2 0 0 1 2-2z"/><path d="M9 9h6M9 13h4"/></svg>Transaksi</button>
+    <div class="fab-wrap"><button class="fab" aria-label="Tambah transaksi" onclick="openForm('in')">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
+    <button data-v="report">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Laporan</button>
+    <button data-v="account">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Akun</button>
+  </nav>
+</div>
+
+<!-- ============ SHEET: Input Transaksi ============ -->
+<div class="overlay" id="overlay" onclick="closeSheets()"></div>
+
+<div class="sheet" id="sheet-form" role="dialog" aria-modal="true" aria-labelledby="form-title">
+  <div class="grab"></div>
+  <div class="sh-head">
+    <h3 id="form-title">Catat Transaksi Kas</h3>
+    <button class="icon-btn" style="background:#E6EAF1;color:var(--ink-2)" onclick="closeSheets()" aria-label="Tutup">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="sh-body">
+    <div class="type-toggle" id="type-toggle">
+      <button data-t="in">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M17 7 7 17M7 8v9h9"/></svg>Kas Masuk</button>
+      <button data-t="out">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg>Kas Keluar</button>
+    </div>
+
+    <div class="amount-box">
+      <label for="f-amount">Nominal</label>
+      <div class="in-wrap"><span>Rp</span><input id="f-amount" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+      <div class="quick" id="quick">
+        <button data-a="100000">+100rb</button><button data-a="500000">+500rb</button>
+        <button data-a="1000000">+1jt</button><button data-a="5000000">+5jt</button><button data-a="0">Hapus</button>
+      </div>
+      <div class="err" id="e-amount">Nominal wajib diisi.</div>
+    </div>
+
+    <div class="field">
+      <label for="f-company">Perusahaan</label>
+      <select id="f-company"></select>
+    </div>
+
+    <div class="field">
+      <label>Kategori</label>
+      <div class="cats" id="f-cats"></div>
+      <div class="err" id="e-cat">Pilih salah satu kategori.</div>
+    </div>
+
+    <div class="grid2">
+      <div class="field"><label for="f-date">Tanggal</label><input type="date" id="f-date"></div>
+      <div class="field"><label for="f-ref">No. Bukti</label><input id="f-ref" placeholder="Otomatis"></div>
+    </div>
+
+    <div class="field">
+      <label for="f-party" id="f-party-lbl">Diterima dari</label>
+      <input id="f-party" placeholder="Nama orang / instansi">
+    </div>
+
+    <div class="field">
+      <label for="f-note">Keterangan</label>
+      <textarea id="f-note" placeholder="Contoh: Pembayaran sewa kantor bulan November"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Bukti Transaksi</label>
+      <button class="upload" onclick="toast('Unggah foto nota — segera hadir')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.5 4h-5L7 7H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        <span><b>Foto nota / kwitansi</b><br>Opsional · JPG, PNG, PDF</span>
+      </button>
+    </div>
+  </div>
+  <div class="sh-foot">
+    <button class="btn primary block" id="f-save">Simpan Transaksi</button>
+  </div>
+</div>
+
+<!-- ============ SHEET: Detail ============ -->
+<div class="sheet" id="sheet-detail" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="sh-head">
+    <h3>Detail Transaksi</h3>
+    <button class="icon-btn" style="background:#E6EAF1;color:var(--ink-2)" onclick="closeSheets()" aria-label="Tutup">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="sh-body" id="detail-body"></div>
+  <div class="sh-foot">
+    <div class="btn-row" style="margin:0">
+      <button class="btn danger" id="d-del">Hapus</button>
+      <button class="btn primary" onclick="closeSheets()">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= DATA ================= */
+const COMPANIES = [
+  { id:'induk', code:'DIC', name:'Dannys Investment Corp',       short:'Induk',    role:'Induk Perusahaan', color:'#0B2545', open:500000000 },
+  { id:'a',     code:'DPI', name:'PT Dannys Properti Indonesia', short:'Properti', role:'Anak Perusahaan 1', color:'#1D6FB8', open:120000000 },
+  { id:'b',     code:'DLN', name:'PT Dannys Logistik Nusantara', short:'Logistik', role:'Anak Perusahaan 2', color:'#0F9D8A', open: 85000000 },
+  { id:'c',     code:'DKS', name:'PT Dannys Kuliner Sejahtera',  short:'Kuliner',  role:'Anak Perusahaan 3', color:'#C9821B', open: 60000000 },
+];
+const CATS = {
+  in:  ['Setoran Modal','Pendapatan Usaha','Dividen Anak Usaha','Pinjaman Diterima','Pengembalian Dana','Penerimaan Lain'],
+  out: ['Operasional Kantor','Gaji & Honor','Dana ke Anak Usaha','Pembelian Aset','Pajak','Sewa','Biaya Lain'],
+};
+const STORE_KEY = 'dic_kasbesar_v1';
+const co = id => COMPANIES.find(c => c.id === id);
+
+const pad = n => String(n).padStart(2,'0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today = iso(new Date());
+const ym = s => s.slice(0,7);
+
+function seedData(){
+  let s = 20261114; const rnd = () => (s = (s*1103515245 + 12345) % 2147483648) / 2147483648;
+  const pick = a => a[Math.floor(rnd()*a.length)];
+  const notesIn = { 'Setoran Modal':'Setoran modal pemegang saham','Pendapatan Usaha':'Pembayaran dari klien','Dividen Anak Usaha':'Dividen kuartal','Pinjaman Diterima':'Pencairan pinjaman','Pengembalian Dana':'Pengembalian uang muka','Penerimaan Lain':'Penerimaan lain-lain' };
+  const notesOut = { 'Operasional Kantor':'ATK & kebutuhan kantor','Gaji & Honor':'Honor staf','Dana ke Anak Usaha':'Transfer dana operasional','Pembelian Aset':'Pembelian peralatan','Pajak':'Setor PPh 21','Sewa':'Sewa gedung kantor','Biaya Lain':'Biaya transport & konsumsi' };
+  const parties = ['Bpk. Danny','CV Mitra Jaya','PT Sinar Abadi','Kantor Pajak','Bu Ratna','Toko Sumber Rezeki','Bank Mandiri','Pak Joko'];
+  const txs = []; const counter = {};
+  const now = new Date();
+  for (let back = 170; back >= 0; back--){
+    const d = new Date(now); d.setDate(d.getDate() - back);
+    const n = rnd() < .35 ? 0 : (rnd() < .7 ? 1 : 2);
+    for (let k = 0; k < n; k++){
+      const type = rnd() < .46 ? 'in' : 'out';
+      const company = pick(['induk','induk','a','b','c']);
+      const category = pick(CATS[type]);
+      const big = ['Setoran Modal','Dividen Anak Usaha','Pinjaman Diterima','Dana ke Anak Usaha','Pembelian Aset'].includes(category);
+      const amount = Math.round((big ? 5e6 + rnd()*45e6 : 2e5 + rnd()*7.8e6) / 50000) * 50000;
+      txs.push(makeTx({ date: iso(d), type, company, category, amount,
+        party: pick(parties), note: (type==='in'?notesIn:notesOut)[category] }, counter));
+    }
+  }
+  return txs.reverse();
+}
+function makeTx(t, counter){
+  const pre = t.type === 'in' ? 'KM' : 'KK';
+  const key = pre + t.company + ym(t.date);
+  counter[key] = (counter[key] || 0) + 1;
+  return { id: Math.random().toString(36).slice(2,10), by:'Admin Keuangan', created: Date.now(),
+    ref: t.ref || `${pre}/${co(t.company).code}/${t.date.slice(2,4)}${t.date.slice(5,7)}/${String(counter[key]).padStart(3,'0')}`, ...t };
+}
+function load(){
+  try { const raw = localStorage.getItem(STORE_KEY); if (raw) return JSON.parse(raw); } catch(e){}
+  return seedData();
+}
+function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(state.txs)); } catch(e){} }
+
+const state = { txs: load(), scope:'all', filter:'all', view:'home', hide:false, reportMonth: ym(today), formType:'in', formCat:null };
+
+/* ================= HELPERS ================= */
+const rp = n => (n < 0 ? '−' : '') + 'Rp ' + Math.abs(Math.round(n)).toLocaleString('id-ID');
+const rpShort = n => {
+  const a = Math.abs(n), sign = n < 0 ? '−' : '';
+  if (a >= 1e9) return sign + 'Rp ' + (a/1e9).toLocaleString('id-ID',{maximumFractionDigits:2}) + ' M';
+  if (a >= 1e6) return sign + 'Rp ' + (a/1e6).toLocaleString('id-ID',{maximumFractionDigits:1}) + ' jt';
+  if (a >= 1e3) return sign + 'Rp ' + Math.round(a/1e3) + ' rb';
+  return rp(n);
+};
+const mask = s => state.hide ? 'Rp ••••••' : s;
+const inScope = t => state.scope === 'all' || t.company === state.scope;
+const scoped = () => state.txs.filter(inScope);
+const openBal = () => state.scope === 'all' ? COMPANIES.reduce((a,c)=>a+c.open,0) : co(state.scope).open;
+const sum = (arr, type) => arr.filter(t => t.type === type).reduce((a,t)=>a+t.amount,0);
+const balanceOf = (arr, base) => base + sum(arr,'in') - sum(arr,'out');
+const monthName = (m, opt={month:'long',year:'numeric'}) => new Date(m+'-01T00:00:00').toLocaleDateString('id-ID', opt);
+const shiftMonth = (m, n) => { const d = new Date(m+'-01T00:00:00'); d.setMonth(d.getMonth()+n); return iso(d).slice(0,7); };
+function dayLabel(s){
+  const y = new Date(); y.setDate(y.getDate()-1);
+  if (s === today) return 'Hari ini';
+  if (s === iso(y)) return 'Kemarin';
+  return new Date(s+'T00:00:00').toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+}
+const sorted = arr => [...arr].sort((a,b)=> b.date.localeCompare(a.date) || b.created - a.created);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const ICON_IN  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M17 7 7 17M7 8v9h9"/></svg>';
+const ICON_OUT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+
+function txRow(t){
+  const c = co(t.company);
+  return `<button class="tx ${t.type}" onclick="openDetail('${t.id}')">
+    <span class="ic">${t.type==='in'?ICON_IN:ICON_OUT}</span>
+    <span class="mid"><div class="t">${esc(t.category)}</div>
+      <div class="s"><span class="co" style="color:${c.color}">${c.code}</span> · ${esc(t.note || t.party || '-')}</div></span>
+    <span class="r"><b>${t.type==='in'?'+':'−'}${mask(rp(t.amount)).replace('Rp ','Rp ')}</b><small>${t.date===today?'Hari ini':new Date(t.date+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short'})}</small></span>
+  </button>`;
+}
+
+/* ================= RENDER ================= */
+function renderScope(){
+  const items = [{id:'all', code:'Semua', color:'#D4AF5A', label:'Konsolidasi'}, ...COMPANIES.map(c=>({id:c.id, color:c.color, label: c.id==='induk' ? 'DIC · Induk' : `${c.code} · ${c.short}`}))];
+  document.getElementById('scope').innerHTML = items.map(i =>
+    `<button class="chip ${state.scope===i.id?'active':''}" data-s="${i.id}"><i style="background:${i.color};${i.id==='induk'?'box-shadow:0 0 0 1.5px #D4AF5A':''}"></i>${i.label}</button>`).join('');
+}
+
+function renderHome(){
+  const arr = scoped(), m = ym(today);
+  const monthArr = arr.filter(t => ym(t.date) === m);
+  document.getElementById('bal-amt').textContent = mask(rp(balanceOf(arr, openBal())));
+  document.getElementById('bal-tag').textContent = state.scope === 'all' ? 'KONSOLIDASI' : co(state.scope).code;
+  document.getElementById('bal-sub').textContent = (state.scope === 'all' ? 'Induk + 3 anak perusahaan' : co(state.scope).name) + ' · per ' + new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('m-in').textContent  = mask(rpShort(sum(monthArr,'in')));
+  document.getElementById('m-out').textContent = mask(rpShort(sum(monthArr,'out')));
+
+  document.getElementById('subs-wrap').style.display = state.scope === 'all' ? '' : 'none';
+  document.getElementById('subs').innerHTML = COMPANIES.map(c => {
+    const ca = state.txs.filter(t=>t.company===c.id), cm = ca.filter(t=>ym(t.date)===m);
+    const net = sum(cm,'in') - sum(cm,'out');
+    return `<button class="card sub-card" data-s="${c.id}">
+      <div class="top"><span class="badge" style="background:${c.color}">${c.code}</span><span class="nm">${c.role}<br><b style="color:var(--ink)">${c.short}</b></span></div>
+      <div class="v">${mask(rpShort(balanceOf(ca,c.open)))}</div>
+      <div class="d ${net>=0?'pos':'neg'}">${net>=0?'▲':'▼'} ${mask(rpShort(Math.abs(net)))} bln ini</div>
+    </button>`;
+  }).join('');
+
+  const recent = sorted(arr).slice(0,6);
+  document.getElementById('recent').innerHTML = recent.length ? recent.map(txRow).join('') : '<div class="empty">Belum ada transaksi.</div>';
+}
+
+function renderTrx(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  let arr = scoped().filter(t => state.filter === 'all' || t.type === state.filter);
+  if (q) arr = arr.filter(t => [t.category,t.note,t.party,t.ref,co(t.company).code].join(' ').toLowerCase().includes(q));
+  const tin = sum(arr,'in'), tout = sum(arr,'out');
+  document.getElementById('t-in').textContent = mask(rpShort(tin));
+  document.getElementById('t-out').textContent = mask(rpShort(tout));
+  const net = document.getElementById('t-net'); net.textContent = mask(rpShort(tin-tout)); net.className = tin-tout>=0?'pos':'neg';
+
+  const groups = {};
+  sorted(arr).slice(0,120).forEach(t => (groups[t.date] ||= []).push(t));
+  const keys = Object.keys(groups);
+  document.getElementById('trx-groups').innerHTML = keys.length ? keys.map(d => {
+    const g = groups[d], n = sum(g,'in') - sum(g,'out');
+    return `<div class="day-head"><b>${dayLabel(d)}</b><span class="${n>=0?'pos':'neg'}">${n>=0?'+':'−'}${mask(rpShort(Math.abs(n)))}</span></div>
+      <div class="card tx-list">${g.map(txRow).join('')}</div>`;
+  }).join('') : '<div class="card empty" style="margin-top:16px">Tidak ada transaksi yang cocok.</div>';
+}
+
+function renderReport(){
+  const m = state.reportMonth, arr = scoped();
+  document.getElementById('p-label').textContent = monthName(m);
+  document.getElementById('p-next').disabled = m >= ym(today);
+  document.getElementById('r-scope').textContent = state.scope === 'all' ? 'Konsolidasi' : co(state.scope).code;
+  const before = arr.filter(t => ym(t.date) < m), during = arr.filter(t => ym(t.date) === m);
+  const open = balanceOf(before, openBal()), tin = sum(during,'in'), tout = sum(during,'out');
+  document.getElementById('r-open').textContent = mask(rp(open));
+  document.getElementById('r-in').textContent = mask(rp(tin));
+  document.getElementById('r-out').textContent = mask(rp(tout));
+  document.getElementById('r-close').textContent = mask(rp(open + tin - tout));
+
+  const months = [...Array(6)].map((_,i)=>shiftMonth(m, i-5));
+  const data = months.map(mm => { const a = arr.filter(t=>ym(t.date)===mm); return { mm, i:sum(a,'in'), o:sum(a,'out') }; });
+  const max = Math.max(1, ...data.flatMap(d=>[d.i,d.o]));
+  document.getElementById('bars').innerHTML = data.map(d =>
+    `<div class="bar-grp ${d.mm===m?'cur':''}" title="${monthName(d.mm)}"><span class="bi" style="height:${d.i/max*100}%"></span><span class="bo" style="height:${d.o/max*100}%"></span></div>`).join('');
+  document.getElementById('bar-lbl').innerHTML = data.map(d => `<span>${monthName(d.mm,{month:'short'})}</span>`).join('');
+
+  const list = state.scope === 'all' ? COMPANIES : [co(state.scope)];
+  document.getElementById('co-list').innerHTML = list.map(c => {
+    const ca = state.txs.filter(t=>t.company===c.id), cb = ca.filter(t=>ym(t.date)<=m), cm = ca.filter(t=>ym(t.date)===m);
+    return `<div class="co-row"><span class="badge" style="background:${c.color}">${c.code}</span>
+      <div class="mid"><div class="nm">${c.name}</div><div class="meta"><span class="pos">+${mask(rpShort(sum(cm,'in')))}</span> · <span class="neg">−${mask(rpShort(sum(cm,'out')))}</span></div></div>
+      <div class="r"><b>${mask(rpShort(balanceOf(cb,c.open)))}</b></div></div>`;
+  }).join('');
+
+  const byCat = {};
+  during.filter(t=>t.type==='out').forEach(t => byCat[t.category] = (byCat[t.category]||0) + t.amount);
+  const cats = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const cmax = cats.length ? cats[0][1] : 1;
+  document.getElementById('cat-list').innerHTML = cats.length ? cats.map(([k,v]) =>
+    `<div class="cat-row"><div class="top"><span>${esc(k)}</span><b>${mask(rpShort(v))}</b></div><div class="track"><i style="width:${v/cmax*100}%"></i></div></div>`).join('')
+    : '<div class="empty">Tidak ada pengeluaran di bulan ini.</div>';
+}
+
+function renderOrg(){
+  document.getElementById('org').innerHTML = COMPANIES.map((c,i) =>
+    `<div class="co-row" style="${i>0?'padding-left:30px':''}">
+      ${i>0?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C5CDD9" stroke-width="2" style="margin-left:-6px"><path d="M4 2v12h16"/></svg>':''}
+      <span class="badge" style="background:${c.color}">${c.code}</span>
+      <div class="mid"><div class="nm">${c.name}</div><div class="meta">${c.role}${i>0?' · nama sementara':''}</div></div></div>`).join('');
+}
+
+function render(){
+  renderScope(); renderHome();
+  if (state.view === 'trx') renderTrx();
+  if (state.view === 'report') renderReport();
+  if (state.view === 'account') renderOrg();
+}
+
+/* ================= NAV / EVENTS ================= */
+function go(v){
+  state.view = v;
+  document.querySelectorAll('.view').forEach(el => el.classList.toggle('active', el.id === 'view-'+v));
+  document.querySelectorAll('#nav [data-v]').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+  window.scrollTo({top:0});
+  render();
+}
+document.getElementById('nav').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) go(b.dataset.v); });
+document.addEventListener('click', e => {
+  const s = e.target.closest('[data-s]'); if (!s) return;
+  state.scope = s.dataset.s; render();
+  document.querySelector(`#scope [data-s="${state.scope}"]`)?.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+});
+document.getElementById('seg').addEventListener('click', e => {
+  const b = e.target.closest('[data-f]'); if (!b) return;
+  state.filter = b.dataset.f;
+  document.querySelectorAll('#seg button').forEach(x => x.classList.toggle('active', x === b));
+  renderTrx();
+});
+document.getElementById('p-prev').onclick = () => { state.reportMonth = shiftMonth(state.reportMonth,-1); renderReport(); };
+document.getElementById('p-next').onclick = () => { state.reportMonth = shiftMonth(state.reportMonth, 1); renderReport(); };
+function toggleHide(){ state.hide = !state.hide; render(); }
+
+/* ================= FORM ================= */
+const $ = id => document.getElementById(id);
+$('f-company').innerHTML = COMPANIES.map(c => `<option value="${c.id}">${c.code} — ${c.name}</option>`).join('');
+
+function setType(t){
+  state.formType = t; state.formCat = null;
+  document.querySelectorAll('#type-toggle button').forEach(b => b.className = b.dataset.t === t ? 'on-'+t : '');
+  $('f-cats').innerHTML = CATS[t].map(c => `<button type="button" data-c="${c}">${c}</button>`).join('');
+  $('f-party-lbl').textContent = t === 'in' ? 'Diterima dari' : 'Dibayarkan kepada';
+  $('f-save').className = 'btn block ' + (t === 'in' ? '' : '');
+  $('f-save').style.background = t === 'in' ? 'var(--in)' : 'var(--out)';
+  $('f-save').style.color = '#fff';
+  $('f-save').textContent = t === 'in' ? 'Simpan Kas Masuk' : 'Simpan Kas Keluar';
+}
+$('type-toggle').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (b) setType(b.dataset.t); });
+$('f-cats').addEventListener('click', e => {
+  const b = e.target.closest('[data-c]'); if (!b) return;
+  state.formCat = b.dataset.c;
+  document.querySelectorAll('#f-cats button').forEach(x => x.classList.toggle('sel', x === b));
+  $('e-cat').classList.remove('show');
+});
+const amountVal = () => Number($('f-amount').value.replace(/\D/g,'')) || 0;
+const setAmount = n => $('f-amount').value = n ? n.toLocaleString('id-ID') : '';
+$('f-amount').addEventListener('input', () => { setAmount(amountVal()); $('e-amount').classList.remove('show'); });
+$('quick').addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; const a = +b.dataset.a; setAmount(a ? amountVal() + a : 0); $('e-amount').classList.remove('show'); });
+
+function openForm(type){
+  setType(type);
+  setAmount(0); $('f-date').value = today; $('f-date').max = today;
+  $('f-ref').value = ''; $('f-party').value = ''; $('f-note').value = '';
+  $('f-company').value = state.scope === 'all' ? 'induk' : state.scope;
+  document.querySelectorAll('.err').forEach(e => e.classList.remove('show'));
+  showSheet('sheet-form');
+  setTimeout(() => $('f-amount').focus(), 320);
+}
+$('f-save').onclick = () => {
+  const amount = amountVal(); let ok = true;
+  if (!amount) { $('e-amount').classList.add('show'); ok = false; }
+  if (!state.formCat) { $('e-cat').classList.add('show'); ok = false; }
+  if (!ok) return;
+  const counter = {};
+  const date = $('f-date').value || today, company = $('f-company').value, pre = state.formType === 'in' ? 'KM' : 'KK';
+  state.txs.filter(t => t.company === company && t.type === state.formType && ym(t.date) === ym(date))
+    .forEach(() => counter[pre+company+ym(date)] = (counter[pre+company+ym(date)]||0)+1);
+  const tx = makeTx({ date, type: state.formType, company, category: state.formCat, amount,
+    party: $('f-party').value.trim(), note: $('f-note').value.trim(), ref: $('f-ref').value.trim() || undefined }, counter);
+  state.txs.push(tx); save();
+  closeSheets(); render();
+  toast(`${state.formType==='in'?'Kas masuk':'Kas keluar'} ${rp(amount)} tersimpan · ${tx.ref}`);
+};
+
+/* ================= DETAIL ================= */
+function openDetail(id){
+  const t = state.txs.find(x => x.id === id); if (!t) return;
+  const c = co(t.company);
+  $('detail-body').innerHTML = `
+    <div class="detail-amt">
+      <div class="ic" style="background:${t.type==='in'?'var(--in-soft)':'var(--out-soft)'};color:${t.type==='in'?'var(--in)':'var(--out)'}">${t.type==='in'?ICON_IN:ICON_OUT}</div>
+      <b class="${t.type==='in'?'pos':''}">${t.type==='in'?'+':'−'}${rp(t.amount)}</b>
+      <small>${t.type==='in'?'Kas Masuk':'Kas Keluar'} · ${esc(t.category)}</small>
+    </div>
+    <div class="card kv">
+      <div class="row"><span>No. Bukti</span><b>${esc(t.ref)}</b></div>
+      <div class="row"><span>Tanggal</span><b>${new Date(t.date+'T00:00:00').toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</b></div>
+      <div class="row"><span>Perusahaan</span><b style="color:${c.color}">${c.name}</b></div>
+      <div class="row"><span>${t.type==='in'?'Diterima dari':'Dibayar kepada'}</span><b>${esc(t.party||'-')}</b></div>
+      <div class="row"><span>Keterangan</span><b>${esc(t.note||'-')}</b></div>
+      <div class="row"><span>Dicatat oleh</span><b>${esc(t.by)}</b></div>
+      <div class="row"><span>Status</span><b><span class="chip" style="background:var(--in-soft);color:var(--in);border:0;padding:3px 10px;display:inline-flex">Tercatat</span></b></div>
+    </div>`;
+  $('d-del').onclick = () => {
+    if (!confirm('Hapus transaksi ' + t.ref + '?')) return;
+    state.txs = state.txs.filter(x => x.id !== id); save(); closeSheets(); render(); toast('Transaksi dihapus');
+  };
+  showSheet('sheet-detail');
+}
+
+/* ================= SHEET / TOAST ================= */
+function showSheet(id){ $('overlay').classList.add('show'); $(id).classList.add('show'); document.body.style.overflow='hidden'; }
+function closeSheets(){ document.querySelectorAll('.sheet,.overlay').forEach(el => el.classList.remove('show')); document.body.style.overflow=''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheets(); });
+let toastTimer;
+function toast(msg){
+  const el = $('toast');
+  el.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4AF5A" stroke-width="3" stroke-linecap="round"><path d="m5 12 5 5L20 7"/></svg>${esc(msg)}`;
+  el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+function resetData(){
+  if (!confirm('Kembalikan data contoh? Transaksi yang Anda input akan hilang.')) return;
+  state.txs = seedData(); save(); render(); toast('Data dummy dikembalikan');
+}
+
+render();
+</script>
+</body>
+</html>
