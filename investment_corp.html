@@ -64,6 +64,9 @@
     display:flex;align-items:center;gap:6px;white-space:nowrap;
   }
   .chip i{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .chip img{width:18px;height:18px;border-radius:5px;background:#fff;object-fit:contain;margin:-2px 0}
+  .variants .unit{background:#fff;padding:8px;overflow:hidden;position:relative}
+  .variants .unit img{position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px);object-fit:contain}
   .chip.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
 
   /* ---------- Layout ---------- */
@@ -283,7 +286,7 @@
 </head>
 <body>
 
-<!-- Reusable logo symbol: "D" = induk perusahaan, 3 bar = 3 anak perusahaan yang tumbuh -->
+<!-- Reusable logo symbol: "D" = induk perusahaan, 3 bar = 3 unit usaha (2 PT + 1 jasa) yang tumbuh -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <linearGradient id="lg-bg" x1="0" y1="0" x2="1" y2="1">
@@ -424,19 +427,14 @@
     <div class="logo-show">
       <svg class="big"><use href="#logo"/></svg>
       <div class="wm"><b>DANNYS</b><span>INVESTMENT CORP</span></div>
-      <div class="tagline">Logo sementara — "D" sebagai induk, tiga batang sebagai anak perusahaan yang tumbuh</div>
+      <div class="tagline">Logo sementara — "D" sebagai induk, tiga batang sebagai tiga unit usaha (2 PT + 1 jasa) yang tumbuh</div>
     </div>
-    <div class="variants">
-      <div style="background:#fff;color:var(--navy)"><svg><use href="#logo-line"/></svg></div>
-      <div style="background:var(--gold);color:var(--navy)"><svg><use href="#logo-line"/></svg></div>
-      <div style="background:var(--navy);color:var(--gold)"><svg><use href="#logo-line"/></svg></div>
-      <p>Varian monokrom: di atas putih, emas, dan navy.</p>
-    </div>
+    <div class="variants" id="unit-logos"></div>
 
     <div class="section-title"><h3>Pengguna</h3></div>
     <div class="card profile">
       <div class="avatar">AK</div>
-      <div style="flex:1"><b style="display:block">Admin Keuangan</b><small style="color:var(--ink-3)">Akses: Induk + 3 usaha</small></div>
+      <div style="flex:1"><b style="display:block">Admin Keuangan</b><small style="color:var(--ink-3)">Akses: Induk + 2 PT + 1 usaha jasa</small></div>
       <span class="chip" style="background:var(--gold-soft);color:var(--gold-2);border:0">Admin</span>
     </div>
 
@@ -565,17 +563,18 @@
 <script>
 /* ================= DATA ================= */
 const COMPANIES = [
-  { id:'induk', code:'DIC', name:'Dannys Investment Corp',       short:'Induk',    role:'Induk Perusahaan', color:'#0B2545', open:500000000 },
-  { id:'a',     code:'KGS', name:'PT Kreatif Global Studio',      short:'Kreatif', icon:'assets/img/kgs-icon.png', logo:'assets/img/kgs-logo.png', role:'Anak Perusahaan 1', color:'#1D6FB8', open:120000000 },
-  { id:'b',     code:'KKS', name:'PT Koleksi Kandang Sultan',     short:'Koleksi', icon:'assets/img/kks-icon.png', logo:'assets/img/kks-logo.png', role:'Anak Perusahaan 2', color:'#0F9D8A', open: 85000000 },
-  { id:'c',     code:'JKP', name:'Jasa Konsultan Pribadi',        short:'Konsultan', icon:'assets/img/jkp-icon.png', logo:'assets/img/jkp-logo.png', role:'Usaha Perorangan (non-PT)', color:'#C9821B', open: 60000000 },
+  { id:'induk', code:'DIC', name:'Dannys Investment Corp',   short:'Induk',     role:'Induk Perusahaan',          biz:'Holding · pengelola investasi grup', color:'#0B2545', open:500000000 },
+  { id:'a',     code:'KGS', name:'PT Kreatif Global Studio', short:'Kreatif',   role:'PT · Anak Perusahaan 1',     biz:'Studio kreatif, desain & produksi video', icon:'assets/img/kgs-icon.png', logo:'assets/img/kgs-logo.png', color:'#D99A1E', open:120000000 },
+  { id:'b',     code:'KKS', name:'PT Koleksi Kandang Sultan', short:'Kandang', role:'PT · Anak Perusahaan 2',     biz:'Koleksi & perawatan hewan premium',   icon:'assets/img/kks-icon.png', logo:'assets/img/kks-logo.png', color:'#5B2A86', open: 85000000 },
+  { id:'c',     code:'JKP', name:'Jasa Konsultan Pribadi',   short:'Konsultan', role:'Jasa · Usaha Perorangan',    biz:'Konsultasi bisnis & pendampingan pribadi', icon:'assets/img/jkp-icon.png', logo:'assets/img/jkp-logo.png', color:'#1F5FA8', open: 40000000 },
 ];
 const CATS = {
-  in:  ['Setoran Modal','Pendapatan Usaha','Dividen Anak Usaha','Pinjaman Diterima','Pengembalian Dana','Penerimaan Lain'],
-  out: ['Operasional Kantor','Gaji & Honor','Dana ke Anak Usaha','Pembelian Aset','Pajak','Sewa','Biaya Lain'],
+  in:  ['Setoran Modal','Pendapatan Usaha','Dividen & Bagi Hasil','Pinjaman Diterima','Pengembalian Dana','Penerimaan Lain'],
+  out: ['Operasional','Gaji & Honor','Dana ke Unit Usaha','Pembelian Aset','Pajak','Sewa','Biaya Lain'],
 };
 const badge = c => c.icon ? `<span class="badge has-img"><img src="${c.icon}" alt="${c.code}"></span>` : `<span class="badge" style="background:${c.color}">${c.code}</span>`;
-const STORE_KEY = 'dic_kasbesar_v1';
+const GROUP_LABEL = 'Induk + 2 PT + 1 usaha jasa';
+const STORE_KEY = 'dic_kasbesar_v2';
 const co = id => COMPANIES.find(c => c.id === id);
 
 const pad = n => String(n).padStart(2,'0');
@@ -586,22 +585,84 @@ const ym = s => s.slice(0,7);
 function seedData(){
   let s = 20261114; const rnd = () => (s = (s*1103515245 + 12345) % 2147483648) / 2147483648;
   const pick = a => a[Math.floor(rnd()*a.length)];
-  const notesIn = { 'Setoran Modal':'Setoran modal pemegang saham','Pendapatan Usaha':'Pembayaran dari klien','Dividen Anak Usaha':'Dividen kuartal','Pinjaman Diterima':'Pencairan pinjaman','Pengembalian Dana':'Pengembalian uang muka','Penerimaan Lain':'Penerimaan lain-lain' };
-  const notesOut = { 'Operasional Kantor':'ATK & kebutuhan kantor','Gaji & Honor':'Honor staf','Dana ke Anak Usaha':'Transfer dana operasional','Pembelian Aset':'Pembelian peralatan','Pajak':'Setor PPh 21','Sewa':'Sewa gedung kantor','Biaya Lain':'Biaya transport & konsumsi' };
-  const parties = ['Bpk. Danny','CV Mitra Jaya','PT Sinar Abadi','Kantor Pajak','Bu Ratna','Toko Sumber Rezeki','Bank Mandiri','Pak Joko'];
+  // Contoh transaksi per unit usaha: [kategori, keterangan, pihak, min jt, max jt]
+  const P = {
+    induk: {
+      in: [
+        ['Setoran Modal','Setoran modal pemegang saham',['Bpk. Danny Mamesah'],20,60],
+        ['Dividen & Bagi Hasil','Dividen PT Kreatif Global Studio',['PT Kreatif Global Studio'],8,25],
+        ['Dividen & Bagi Hasil','Dividen PT Koleksi Kandang Sultan',['PT Koleksi Kandang Sultan'],6,20],
+        ['Dividen & Bagi Hasil','Bagi hasil Jasa Konsultan Pribadi',['Jasa Konsultan Pribadi'],3,10],
+        ['Pengembalian Dana','Pengembalian dana talangan unit usaha',['PT Kreatif Global Studio','PT Koleksi Kandang Sultan'],5,15],
+      ],
+      out: [
+        ['Dana ke Unit Usaha','Modal kerja PT Kreatif Global Studio',['PT Kreatif Global Studio'],10,30],
+        ['Dana ke Unit Usaha','Modal kerja PT Koleksi Kandang Sultan',['PT Koleksi Kandang Sultan'],10,30],
+        ['Dana ke Unit Usaha','Modal kerja Jasa Konsultan Pribadi',['Jasa Konsultan Pribadi'],3,10],
+        ['Gaji & Honor','Gaji staf keuangan & admin',['Staf Induk'],6,12],
+        ['Operasional','ATK & kebutuhan kantor pusat',['Toko Sumber Rezeki'],0.3,2],
+        ['Pajak','Setor PPh Badan',['Kantor Pajak'],3,10],
+        ['Sewa','Sewa kantor pusat',['PT Graha Properti'],8,15],
+      ],
+    },
+    a: { // PT Kreatif Global Studio
+      in: [
+        ['Pendapatan Usaha','Proyek desain logo & brand identity',['CV Mitra Jaya','Kopi Senja','Toko Sumber Rezeki'],3,15],
+        ['Pendapatan Usaha','Produksi video promosi',['PT Sinar Abadi','Hotel Nusantara','Klinik Sehat'],8,30],
+        ['Pendapatan Usaha','Kelola media sosial bulanan',['Kopi Senja','Klinik Sehat','Bakery Manis'],3,8],
+        ['Pendapatan Usaha','Pendapatan sponsor & Adsense YouTube',['Google Asia Pacific','Sponsor Channel'],2,12],
+      ],
+      out: [
+        ['Gaji & Honor','Honor desainer grafis',['Tim Desain'],4,9],
+        ['Gaji & Honor','Honor editor video',['Tim Editor'],4,9],
+        ['Operasional','Langganan Adobe & software editing',['Adobe Systems'],0.8,1.5],
+        ['Pembelian Aset','Pembelian kamera, lensa & lighting',['Toko Kamera Jaya'],8,25],
+        ['Sewa','Sewa studio produksi',['Studio Kemang'],5,10],
+        ['Biaya Lain','Biaya iklan Meta & Google Ads',['Meta Platforms','Google Ads'],1,5],
+      ],
+    },
+    b: { // PT Koleksi Kandang Sultan
+      in: [
+        ['Pendapatan Usaha','Penjualan koleksi',['Bpk. Hendra','Bpk. Rudi','H. Salim','Komunitas Pecinta Satwa'],8,40],
+        ['Pendapatan Usaha','Jasa titip rawat koleksi',['Bpk. Hendra','Ibu Ratna'],2,6],
+        ['Penerimaan Lain','Hadiah kontes & pameran',['Panitia Kontes Nasional'],3,15],
+      ],
+      out: [
+        ['Pembelian Aset','Pembelian koleksi baru',['Peternak Bogor','Breeder Surabaya'],10,40],
+        ['Operasional','Pakan & vitamin',['Toko Pakan Makmur'],1.5,5],
+        ['Biaya Lain','Pemeriksaan & obat dokter hewan',['drh. Andi'],0.5,3],
+        ['Operasional','Perawatan & kebersihan kandang',['Tim Kandang'],1,3],
+        ['Gaji & Honor','Honor perawat kandang',['Tim Kandang'],3,6],
+        ['Sewa','Sewa lahan kandang',['Bpk. Joko'],4,8],
+      ],
+    },
+    c: { // Jasa Konsultan Pribadi (non-PT)
+      in: [
+        ['Pendapatan Usaha','Fee konsultasi bisnis',['CV Mitra Jaya','Bu Ratna','UD Sejahtera'],2,8],
+        ['Pendapatan Usaha','Retainer konsultasi bulanan',['PT Sinar Abadi','Hotel Nusantara'],5,12],
+        ['Pendapatan Usaha','Pendampingan perizinan usaha',['UD Sejahtera','Kopi Senja'],3,10],
+        ['Pendapatan Usaha','Kelas privat & workshop',['Peserta Workshop'],1,5],
+      ],
+      out: [
+        ['Biaya Lain','Transport & akomodasi ke klien',['Traveloka','Grab'],0.3,3],
+        ['Biaya Lain','Konsumsi meeting klien',['Kafe Bintang'],0.2,1],
+        ['Operasional','Langganan internet & software',['Telkom Indonesia','Zoom'],0.4,1],
+        ['Pajak','Setor PPh Final 0,5%',['Kantor Pajak'],0.2,1],
+        ['Gaji & Honor','Honor asisten konsultan',['Asisten Pribadi'],2,4],
+      ],
+    },
+  };
   const txs = []; const counter = {};
   const now = new Date();
   for (let back = 170; back >= 0; back--){
     const d = new Date(now); d.setDate(d.getDate() - back);
-    const n = rnd() < .35 ? 0 : (rnd() < .7 ? 1 : 2);
+    const n = rnd() < .3 ? 0 : (rnd() < .65 ? 1 : 2);
     for (let k = 0; k < n; k++){
-      const type = rnd() < .46 ? 'in' : 'out';
-      const company = pick(['induk','induk','a','b','c']);
-      const category = pick(CATS[type]);
-      const big = ['Setoran Modal','Dividen Anak Usaha','Pinjaman Diterima','Dana ke Anak Usaha','Pembelian Aset'].includes(category);
-      const amount = Math.round((big ? 5e6 + rnd()*45e6 : 2e5 + rnd()*7.8e6) / 50000) * 50000;
-      txs.push(makeTx({ date: iso(d), type, company, category, amount,
-        party: pick(parties), note: (type==='in'?notesIn:notesOut)[category] }, counter));
+      const company = pick(['induk','a','a','b','b','c','c']);
+      const type = rnd() < (company === 'induk' ? .4 : .5) ? 'in' : 'out';
+      const [category, note, parties, lo, hi] = pick(P[company][type]);
+      const amount = Math.max(50000, Math.round((lo + rnd()*(hi-lo)) * 1e6 / 50000) * 50000);
+      txs.push(makeTx({ date: iso(d), type, company, category, amount, party: pick(parties), note }, counter));
     }
   }
   return txs.reverse();
@@ -662,9 +723,9 @@ function txRow(t){
 
 /* ================= RENDER ================= */
 function renderScope(){
-  const items = [{id:'all', code:'Semua', color:'#D4AF5A', label:'Konsolidasi'}, ...COMPANIES.map(c=>({id:c.id, color:c.color, label: c.id==='induk' ? 'DIC · Induk' : `${c.code} · ${c.short}`}))];
+  const items = [{id:'all', code:'Semua', color:'#D4AF5A', label:'Konsolidasi'}, ...COMPANIES.map(c=>({id:c.id, color:c.color, icon:c.icon, label: c.id==='induk' ? 'DIC · Induk' : `${c.code} · ${c.short}`}))];
   document.getElementById('scope').innerHTML = items.map(i =>
-    `<button class="chip ${state.scope===i.id?'active':''}" data-s="${i.id}"><i style="background:${i.color};${i.id==='induk'?'box-shadow:0 0 0 1.5px #D4AF5A':''}"></i>${i.label}</button>`).join('');
+    `<button class="chip ${state.scope===i.id?'active':''}" data-s="${i.id}">${i.icon?`<img src="${i.icon}" alt="">`:`<i style="background:${i.color};${i.id==='induk'?'box-shadow:0 0 0 1.5px #D4AF5A':''}"></i>`}${i.label}</button>`).join('');
 }
 
 function renderHome(){
@@ -672,7 +733,7 @@ function renderHome(){
   const monthArr = arr.filter(t => ym(t.date) === m);
   document.getElementById('bal-amt').textContent = mask(rp(balanceOf(arr, openBal())));
   document.getElementById('bal-tag').textContent = state.scope === 'all' ? 'KONSOLIDASI' : co(state.scope).code;
-  document.getElementById('bal-sub').textContent = (state.scope === 'all' ? 'Induk + 3 anak perusahaan' : co(state.scope).name) + ' · per ' + new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('bal-sub').textContent = (state.scope === 'all' ? GROUP_LABEL : co(state.scope).name) + ' · per ' + new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
   document.getElementById('m-in').textContent  = mask(rpShort(sum(monthArr,'in')));
   document.getElementById('m-out').textContent = mask(rpShort(sum(monthArr,'out')));
 
@@ -751,7 +812,11 @@ function renderOrg(){
     `<div class="co-row" style="${i>0?'padding-left:30px':''}">
       ${i>0?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C5CDD9" stroke-width="2" style="margin-left:-6px"><path d="M4 2v12h16"/></svg>':''}
       ${badge(c)}
-      <div class="mid"><div class="nm">${c.name}</div><div class="meta">${c.role}${i>0?' · nama sementara':''}</div></div></div>`).join('');
+      <div class="mid"><div class="nm">${c.name}</div><div class="meta">${c.role} · ${c.biz}</div></div></div>`).join('');
+  const units = COMPANIES.filter(c => c.logo);
+  document.getElementById('unit-logos').innerHTML = units.map(c =>
+    `<div class="unit" title="${esc(c.name)}"><img src="${c.logo}" alt="Logo ${esc(c.name)}"></div>`).join('')
+    + `<p>Logo unit usaha: ${units.map(c => c.name).join(', ')}.</p>`;
 }
 
 function render(){
@@ -849,7 +914,7 @@ function openDetail(id){
     <div class="card kv">
       <div class="row"><span>No. Bukti</span><b>${esc(t.ref)}</b></div>
       <div class="row"><span>Tanggal</span><b>${new Date(t.date+'T00:00:00').toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</b></div>
-      <div class="row"><span>Perusahaan</span><b style="color:${c.color}">${c.name}</b></div>
+      <div class="row"><span>Perusahaan</span><b style="display:flex;align-items:center;gap:8px;justify-content:flex-end;color:${c.color}">${c.icon?`<img src="${c.icon}" alt="" style="width:22px;height:22px;border-radius:6px;object-fit:contain">`:''}${c.name}</b></div>
       <div class="row"><span>${t.type==='in'?'Diterima dari':'Dibayar kepada'}</span><b>${esc(t.party||'-')}</b></div>
       <div class="row"><span>Keterangan</span><b>${esc(t.note||'-')}</b></div>
       <div class="row"><span>Dicatat oleh</span><b>${esc(t.by)}</b></div>
