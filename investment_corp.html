@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#07130D; --navy-2:#0C2117; --navy-3:#163A27;
+    --navy:#030805; --navy-2:#06110B; --navy-3:#163A27;
     --gold:#D4AF5A; --gold-2:#B8913A; --gold-soft:#F6EFDD;
     --bg:#F3F6F2; --card:#FFFFFF; --ink:#0F1D15; --ink-2:#4A5A50; --ink-3:#86958B;
     --line:#E2E8E1;
@@ -45,12 +45,12 @@
 
   /* ---------- Header ---------- */
   .header{
-    background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 70%,var(--navy-3) 100%);
+    background:linear-gradient(160deg,#000 0%,var(--navy) 60%,var(--navy-2) 100%);
     color:#fff; padding:calc(14px + env(safe-area-inset-top,0px)) 16px 0; position:sticky; top:0; z-index:20;
   }
   .brand-row{display:flex;align-items:center;gap:10px}
   .logo-mark{width:40px;height:40px;flex:none}
-  .brand-logo{height:32px;width:auto;display:block;flex:none}
+  .brand-logo{height:28px;width:auto;display:block;flex:none}
   .wordmark{display:flex;flex-direction:column;line-height:1}
   .wordmark b{font-weight:800;letter-spacing:.16em;font-size:15px}
   .wordmark span{font-size:9.5px;letter-spacing:.28em;color:var(--gold);font-weight:700;margin-top:4px}
@@ -81,10 +81,10 @@
 
   /* ---------- Balance ---------- */
   .hero-bg{background:linear-gradient(180deg,var(--navy-3) 0,var(--navy-3) 0) ;margin:0 -16px;padding:0 16px;
-    background:linear-gradient(180deg,#0C2117 0 70px,transparent 70px)}
+    background:linear-gradient(180deg,#06110B 0 70px,transparent 70px)}
   .balance{
     position:relative;overflow:hidden;border-radius:22px;padding:18px 18px 16px;color:#fff;
-    background:radial-gradient(120% 140% at 100% 0%,#1F4A31 0%,#0F2A1C 45%,#07130D 100%);
+    background:radial-gradient(120% 140% at 100% 0%,#173826 0%,#0A1D13 45%,#030805 100%);
     box-shadow:0 14px 30px rgba(7,19,13,.28);
   }
   .balance::after{content:"";position:absolute;right:-40px;top:-40px;width:170px;height:170px;border-radius:50%;
@@ -194,9 +194,9 @@
   .btn.block{width:100%}
 
   /* ---------- Account / Logo ---------- */
-  .logo-show{padding:26px 18px 20px;text-align:center;background:radial-gradient(120% 120% at 50% 0%,#0F2A1C 0%,#050D09 70%);border:1px solid rgba(212,175,90,.25);color:#fff;border-radius:22px;margin-top:16px;position:relative;overflow:hidden}
+  .logo-show{padding:26px 18px 20px;text-align:center;background:#000;border:1px solid rgba(212,175,90,.25);color:#fff;border-radius:22px;margin-top:16px;position:relative;overflow:hidden}
   .logo-show::before{content:"";position:absolute;inset:auto -60px -90px auto;width:220px;height:220px;border-radius:50%;border:30px solid rgba(212,175,90,.1)}
-  .logo-show .big-logo{width:100%;max-width:240px;height:auto;margin:0 auto;display:block;position:relative;filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
+  .logo-show .big-logo{width:100%;max-width:200px;height:auto;margin:0 auto;display:block;position:relative;filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
   .logo-show .big{width:84px;height:84px;margin:0 auto 14px;display:block;filter:drop-shadow(0 10px 20px rgba(0,0,0,.25))}
   .logo-show .wm b{font-size:22px;letter-spacing:.2em;font-weight:800;display:block}
   .logo-show .wm span{font-size:10.5px;letter-spacing:.42em;color:var(--gold);font-weight:700;display:block;margin-top:6px}
